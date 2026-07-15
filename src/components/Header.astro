@@ -21,7 +21,7 @@ function isActive(href: string) {
     "sticky top-0 z-50 transition-all duration-300",
     isHome
       ? "bg-transparent header-over-hero"
-      : "border-b border-brand-dark/8 bg-white/95 backdrop-blur-md shadow-sm",
+      : "border-b border-brand-dark/8 bg-white shadow-sm",
   ]}
 >
   <div
@@ -90,9 +90,10 @@ function isActive(href: string) {
     </div>
   </div>
 
+  <!-- Solid white panel — always readable on mobile -->
   <div
     id="mobile-nav"
-    class="hidden border-t border-white/10 bg-white/10 backdrop-blur-md md:hidden"
+    class="hidden border-t border-brand-dark/8 bg-white shadow-md md:hidden"
     hidden
   >
     <nav
@@ -104,10 +105,10 @@ function isActive(href: string) {
           <a
             href={link.href}
             class:list={[
-              "rounded-lg px-3 py-2.5 text-sm font-medium",
+              "rounded-lg px-3 py-2.5 text-sm font-medium transition",
               isActive(link.href)
-                ? "bg-white/20 text-white"
-                : "text-white/80 hover:bg-white/10",
+                ? "bg-brand-primary/10 text-brand-primary"
+                : "text-brand-dark/80 hover:bg-brand-bg hover:text-brand-primary",
             ]}
           >
             {link.label}
@@ -121,168 +122,143 @@ function isActive(href: string) {
 <script>
   const toggle = document.getElementById("nav-toggle");
   const panel = document.getElementById("mobile-nav");
+  const header = document.getElementById("main-header");
+  const isHome = header?.getAttribute("data-is-home") === "true";
+
+  const container = header?.querySelector(".header-container");
+  const logo = document.getElementById("header-logo");
+  const navDir = document.getElementById("header-nav-dir");
+  const navClaim = document.getElementById("header-nav-claim");
+  const menuBtn = document.getElementById("nav-toggle");
+
+  function getThreshold() {
+    return Math.max(window.innerHeight - 80, 60);
+  }
+
+  function isScrolled() {
+    return !isHome || window.scrollY > getThreshold();
+  }
+
+  function setSolidHeader() {
+    if (!header) return;
+    header.classList.remove("bg-transparent", "header-over-hero");
+    header.classList.add(
+      "border-b",
+      "border-brand-dark/8",
+      "bg-white",
+      "shadow-sm",
+    );
+  }
+
+  function setTransparentHeader() {
+    if (!header || !isHome) return;
+    header.classList.add("bg-transparent", "header-over-hero");
+    header.classList.remove(
+      "border-b",
+      "border-brand-dark/8",
+      "bg-white",
+      "shadow-sm",
+    );
+  }
+
+  function setLightChrome() {
+    logo?.classList.remove("text-white");
+    logo?.classList.add("text-brand-primary");
+
+    navDir?.classList.remove("text-white/80");
+    navDir?.classList.add("text-brand-dark/70", "hover:text-brand-primary");
+
+    navClaim?.classList.remove(
+      "border-white/40",
+      "bg-white/10",
+      "text-white",
+      "backdrop-blur-sm",
+      "hover:bg-white/20",
+    );
+    navClaim?.classList.add(
+      "border-brand-accent",
+      "bg-transparent",
+      "text-brand-dark",
+      "hover:bg-brand-accent/10",
+    );
+
+    menuBtn?.classList.remove(
+      "border-white/30",
+      "bg-white/10",
+      "text-white",
+      "backdrop-blur-sm",
+      "hover:bg-white/20",
+    );
+    menuBtn?.classList.add(
+      "border-brand-dark/12",
+      "bg-white",
+      "text-brand-dark",
+      "shadow-sm",
+      "hover:border-brand-primary/30",
+    );
+  }
+
+  function setHeroChrome() {
+    logo?.classList.remove("text-brand-primary");
+    logo?.classList.add("text-white");
+
+    navDir?.classList.add("text-white/80");
+    navDir?.classList.remove("text-brand-dark/70", "hover:text-brand-primary");
+
+    navClaim?.classList.remove(
+      "border-brand-accent",
+      "bg-transparent",
+      "text-brand-dark",
+      "hover:bg-brand-accent/10",
+    );
+    navClaim?.classList.add(
+      "border-white/40",
+      "bg-white/10",
+      "text-white",
+      "backdrop-blur-sm",
+      "hover:bg-white/20",
+    );
+
+    menuBtn?.classList.remove(
+      "border-brand-dark/12",
+      "bg-white",
+      "text-brand-dark",
+      "shadow-sm",
+      "hover:border-brand-primary/30",
+    );
+    menuBtn?.classList.add(
+      "border-white/30",
+      "bg-white/10",
+      "text-white",
+      "backdrop-blur-sm",
+      "hover:bg-white/20",
+    );
+  }
+
+  function syncHeader() {
+    const menuOpen = toggle?.getAttribute("aria-expanded") === "true";
+    const solid = !isHome || isScrolled() || menuOpen;
+
+    if (solid) {
+      setSolidHeader();
+      setLightChrome();
+      container?.classList.replace("py-4", "py-2.5");
+    } else {
+      setTransparentHeader();
+      setHeroChrome();
+      container?.classList.replace("py-2.5", "py-4");
+    }
+  }
 
   toggle?.addEventListener("click", () => {
     const open = panel?.classList.toggle("hidden") === false;
     panel?.toggleAttribute("hidden", !open);
     toggle.setAttribute("aria-expanded", String(open));
+    syncHeader();
   });
 
-  const header = document.getElementById("main-header");
-  const isHome = header?.getAttribute("data-is-home") === "true";
-
   if (isHome && header) {
-    const container = header.querySelector(".header-container");
-    const logo = document.getElementById("header-logo");
-    const navDir = document.getElementById("header-nav-dir");
-    const navClaim = document.getElementById("header-nav-claim");
-    const menuBtn = document.getElementById("nav-toggle");
-    const mobileNav = document.getElementById("mobile-nav");
-
-    // How many px to scroll before we switch to white-bg mode
-    // Use innerHeight so it switches right after the hero ends
-    const getThreshold = () => Math.max(window.innerHeight - 80, 60);
-
-    const handleScroll = () => {
-      const scrolled = window.scrollY > getThreshold();
-
-      // ---- HEADER BACKGROUND ----
-      if (scrolled) {
-        header.classList.remove("bg-transparent", "header-over-hero");
-        header.classList.add(
-          "border-b",
-          "border-brand-dark/8",
-          "bg-white/95",
-          "backdrop-blur-md",
-          "shadow-sm",
-        );
-        container?.classList.replace("py-4", "py-2.5");
-      } else {
-        header.classList.add("bg-transparent", "header-over-hero");
-        header.classList.remove(
-          "border-b",
-          "border-brand-dark/8",
-          "bg-white/95",
-          "backdrop-blur-md",
-          "shadow-sm",
-        );
-        container?.classList.replace("py-2.5", "py-4");
-      }
-
-      // ---- LOGO COLOR ----
-      if (logo) {
-        logo.className = logo.className
-          .replace(/text-(white|brand-primary)/g, "")
-          .trim();
-        logo.classList.add(scrolled ? "text-brand-primary" : "text-white");
-      }
-
-      // ---- NAV LINK: Direktori ----
-      if (navDir) {
-        if (scrolled) {
-          navDir.classList.remove("text-white/80");
-          navDir.classList.add(
-            "text-brand-dark/70",
-            "hover:text-brand-primary",
-          );
-        } else {
-          navDir.classList.add("text-white/80");
-          navDir.classList.remove(
-            "text-brand-dark/70",
-            "hover:text-brand-primary",
-          );
-        }
-      }
-
-      // ---- KLAIM BUTTON ----
-      if (navClaim) {
-        if (scrolled) {
-          navClaim.classList.remove(
-            "border-white/40",
-            "bg-white/10",
-            "text-white",
-            "backdrop-blur-sm",
-            "hover:bg-white/20",
-          );
-          navClaim.classList.add(
-            "border-brand-accent",
-            "bg-transparent",
-            "text-brand-dark",
-            "hover:bg-brand-accent/10",
-          );
-        } else {
-          navClaim.classList.remove(
-            "border-brand-accent",
-            "bg-transparent",
-            "text-brand-dark",
-            "hover:bg-brand-accent/10",
-          );
-          navClaim.classList.add(
-            "border-white/40",
-            "bg-white/10",
-            "text-white",
-            "backdrop-blur-sm",
-            "hover:bg-white/20",
-          );
-        }
-      }
-
-      // ---- MENU BUTTON ----
-      if (menuBtn) {
-        if (scrolled) {
-          menuBtn.classList.remove(
-            "border-white/30",
-            "bg-white/10",
-            "text-white",
-            "backdrop-blur-sm",
-            "hover:bg-white/20",
-          );
-          menuBtn.classList.add(
-            "border-brand-dark/12",
-            "bg-white",
-            "text-brand-dark",
-            "shadow-sm",
-            "hover:border-brand-primary/30",
-          );
-        } else {
-          menuBtn.classList.remove(
-            "border-brand-dark/12",
-            "bg-white",
-            "text-brand-dark",
-            "shadow-sm",
-            "hover:border-brand-primary/30",
-          );
-          menuBtn.classList.add(
-            "border-white/30",
-            "bg-white/10",
-            "text-white",
-            "backdrop-blur-sm",
-            "hover:bg-white/20",
-          );
-        }
-      }
-
-      // ---- MOBILE NAV border ----
-      if (mobileNav) {
-        if (scrolled) {
-          mobileNav.classList.remove(
-            "border-white/10",
-            "bg-white/10",
-            "backdrop-blur-md",
-          );
-          mobileNav.classList.add("border-brand-dark/8", "bg-white");
-        } else {
-          mobileNav.classList.remove("border-brand-dark/8", "bg-white");
-          mobileNav.classList.add(
-            "border-white/10",
-            "bg-white/10",
-            "backdrop-blur-md",
-          );
-        }
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
+    window.addEventListener("scroll", syncHeader, { passive: true });
+    syncHeader();
   }
 </script>
