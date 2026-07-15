@@ -1,0 +1,288 @@
+---
+const pathname = Astro.url.pathname;
+const isHome = pathname === "/";
+
+const links = [
+  { href: "/", label: "Beranda" },
+  { href: "/directory", label: "Direktori" },
+  { href: "/claim", label: "Klaim Media" },
+];
+
+function isActive(href: string) {
+  if (href === "/") return pathname === "/";
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+---
+
+<header
+  id="main-header"
+  data-is-home={isHome ? "true" : "false"}
+  class:list={[
+    "sticky top-0 z-50 transition-all duration-300",
+    isHome
+      ? "bg-transparent header-over-hero"
+      : "border-b border-brand-dark/8 bg-white/95 backdrop-blur-md shadow-sm",
+  ]}
+>
+  <div
+    class="header-container mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 transition-all duration-300 sm:px-6 lg:px-8"
+  >
+    <a
+      href="/"
+      id="header-logo"
+      class:list={[
+        "shrink-0 font-display text-xl font-bold tracking-tight transition-colors duration-300 sm:text-2xl",
+        isHome ? "text-white" : "text-brand-primary",
+      ]}
+    >
+      mediadirectory
+    </a>
+
+    <div class="flex items-center gap-2 sm:gap-3">
+      <a
+        href="/directory"
+        id="header-nav-dir"
+        class:list={[
+          "hidden text-sm font-medium transition-colors duration-300 hover:opacity-80 sm:inline",
+          isHome
+            ? "text-white/80"
+            : "text-brand-dark/70 hover:text-brand-primary",
+        ]}
+      >
+        Direktori
+      </a>
+      <a
+        href="/claim"
+        id="header-nav-claim"
+        class:list={[
+          "inline-flex items-center rounded-full px-3.5 py-2 text-sm font-semibold transition duration-300 sm:px-4",
+          isHome
+            ? "border border-white/40 bg-white/10 text-white backdrop-blur-sm hover:bg-white/20"
+            : "border border-brand-accent bg-transparent text-brand-dark hover:bg-brand-accent/10",
+        ]}
+      >
+        Klaim media Anda
+      </a>
+      <button
+        type="button"
+        id="nav-toggle"
+        class:list={[
+          "inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-medium transition duration-300",
+          isHome
+            ? "border border-white/30 bg-white/10 text-white backdrop-blur-sm hover:bg-white/20"
+            : "border border-brand-dark/12 bg-white text-brand-dark shadow-sm hover:border-brand-primary/30",
+        ]}
+        aria-expanded="false"
+        aria-controls="mobile-nav"
+        aria-label="Buka menu"
+      >
+        <span class="hidden sm:inline">Menu</span>
+        <svg
+          class="h-4 w-4"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path d="M4 7h16M4 12h16M4 17h16" stroke-linecap="round"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div
+    id="mobile-nav"
+    class="hidden border-t border-white/10 bg-white/10 backdrop-blur-md md:hidden"
+    hidden
+  >
+    <nav
+      class="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-3 sm:px-6"
+      aria-label="Menu"
+    >
+      {
+        links.map((link) => (
+          <a
+            href={link.href}
+            class:list={[
+              "rounded-lg px-3 py-2.5 text-sm font-medium",
+              isActive(link.href)
+                ? "bg-white/20 text-white"
+                : "text-white/80 hover:bg-white/10",
+            ]}
+          >
+            {link.label}
+          </a>
+        ))
+      }
+    </nav>
+  </div>
+</header>
+
+<script>
+  const toggle = document.getElementById("nav-toggle");
+  const panel = document.getElementById("mobile-nav");
+
+  toggle?.addEventListener("click", () => {
+    const open = panel?.classList.toggle("hidden") === false;
+    panel?.toggleAttribute("hidden", !open);
+    toggle.setAttribute("aria-expanded", String(open));
+  });
+
+  const header = document.getElementById("main-header");
+  const isHome = header?.getAttribute("data-is-home") === "true";
+
+  if (isHome && header) {
+    const container = header.querySelector(".header-container");
+    const logo = document.getElementById("header-logo");
+    const navDir = document.getElementById("header-nav-dir");
+    const navClaim = document.getElementById("header-nav-claim");
+    const menuBtn = document.getElementById("nav-toggle");
+    const mobileNav = document.getElementById("mobile-nav");
+
+    // How many px to scroll before we switch to white-bg mode
+    // Use innerHeight so it switches right after the hero ends
+    const getThreshold = () => Math.max(window.innerHeight - 80, 60);
+
+    const handleScroll = () => {
+      const scrolled = window.scrollY > getThreshold();
+
+      // ---- HEADER BACKGROUND ----
+      if (scrolled) {
+        header.classList.remove("bg-transparent", "header-over-hero");
+        header.classList.add(
+          "border-b",
+          "border-brand-dark/8",
+          "bg-white/95",
+          "backdrop-blur-md",
+          "shadow-sm",
+        );
+        container?.classList.replace("py-4", "py-2.5");
+      } else {
+        header.classList.add("bg-transparent", "header-over-hero");
+        header.classList.remove(
+          "border-b",
+          "border-brand-dark/8",
+          "bg-white/95",
+          "backdrop-blur-md",
+          "shadow-sm",
+        );
+        container?.classList.replace("py-2.5", "py-4");
+      }
+
+      // ---- LOGO COLOR ----
+      if (logo) {
+        logo.className = logo.className
+          .replace(/text-(white|brand-primary)/g, "")
+          .trim();
+        logo.classList.add(scrolled ? "text-brand-primary" : "text-white");
+      }
+
+      // ---- NAV LINK: Direktori ----
+      if (navDir) {
+        if (scrolled) {
+          navDir.classList.remove("text-white/80");
+          navDir.classList.add(
+            "text-brand-dark/70",
+            "hover:text-brand-primary",
+          );
+        } else {
+          navDir.classList.add("text-white/80");
+          navDir.classList.remove(
+            "text-brand-dark/70",
+            "hover:text-brand-primary",
+          );
+        }
+      }
+
+      // ---- KLAIM BUTTON ----
+      if (navClaim) {
+        if (scrolled) {
+          navClaim.classList.remove(
+            "border-white/40",
+            "bg-white/10",
+            "text-white",
+            "backdrop-blur-sm",
+            "hover:bg-white/20",
+          );
+          navClaim.classList.add(
+            "border-brand-accent",
+            "bg-transparent",
+            "text-brand-dark",
+            "hover:bg-brand-accent/10",
+          );
+        } else {
+          navClaim.classList.remove(
+            "border-brand-accent",
+            "bg-transparent",
+            "text-brand-dark",
+            "hover:bg-brand-accent/10",
+          );
+          navClaim.classList.add(
+            "border-white/40",
+            "bg-white/10",
+            "text-white",
+            "backdrop-blur-sm",
+            "hover:bg-white/20",
+          );
+        }
+      }
+
+      // ---- MENU BUTTON ----
+      if (menuBtn) {
+        if (scrolled) {
+          menuBtn.classList.remove(
+            "border-white/30",
+            "bg-white/10",
+            "text-white",
+            "backdrop-blur-sm",
+            "hover:bg-white/20",
+          );
+          menuBtn.classList.add(
+            "border-brand-dark/12",
+            "bg-white",
+            "text-brand-dark",
+            "shadow-sm",
+            "hover:border-brand-primary/30",
+          );
+        } else {
+          menuBtn.classList.remove(
+            "border-brand-dark/12",
+            "bg-white",
+            "text-brand-dark",
+            "shadow-sm",
+            "hover:border-brand-primary/30",
+          );
+          menuBtn.classList.add(
+            "border-white/30",
+            "bg-white/10",
+            "text-white",
+            "backdrop-blur-sm",
+            "hover:bg-white/20",
+          );
+        }
+      }
+
+      // ---- MOBILE NAV border ----
+      if (mobileNav) {
+        if (scrolled) {
+          mobileNav.classList.remove(
+            "border-white/10",
+            "bg-white/10",
+            "backdrop-blur-md",
+          );
+          mobileNav.classList.add("border-brand-dark/8", "bg-white");
+        } else {
+          mobileNav.classList.remove("border-brand-dark/8", "bg-white");
+          mobileNav.classList.add(
+            "border-white/10",
+            "bg-white/10",
+            "backdrop-blur-md",
+          );
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+  }
+</script>

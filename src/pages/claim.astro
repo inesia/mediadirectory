@@ -1,0 +1,278 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { mediaOutlets } from '../lib/data';
+
+const preselect = Astro.url.searchParams.get('media') || '';
+---
+
+<Layout
+  title="Klaim Media"
+  description="Ajukan kepemilikan listing media di Media Directory Indonesia."
+>
+  <section class="border-b border-brand-dark/6 bg-white">
+    <div class="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8 lg:py-12">
+      <p class="text-xs font-semibold uppercase tracking-[0.18em] text-brand-accent">
+        Klaim Media
+      </p>
+      <h1 class="mt-2 font-display text-3xl font-bold tracking-tight sm:text-4xl">
+        Ajukan kepemilikan listing
+      </h1>
+      <p class="mt-2 max-w-2xl text-sm text-brand-dark/65 sm:text-base">
+        Lengkapi formulir di bawah. Mockup ini menyimpan klaim di browser Anda secara lokal —
+        tanpa server.
+      </p>
+    </div>
+  </section>
+
+  <section
+    class="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:grid lg:grid-cols-[1.1fr_0.9fr] lg:gap-12 lg:px-8 lg:py-12"
+  >
+    <div>
+      <form id="claim-form" class="space-y-5" novalidate>
+        <div class="grid gap-5 sm:grid-cols-2">
+          <label class="block sm:col-span-2">
+            <span class="mb-1.5 block text-sm font-semibold">Media</span>
+            <select
+              name="mediaSlug"
+              id="claim-media"
+              required
+              class="w-full rounded-lg border border-brand-dark/12 bg-white px-3 py-2.5 text-sm outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20"
+            >
+              <option value="">Pilih media…</option>
+              {
+                mediaOutlets.map((m) => (
+                  <option value={m.slug} selected={m.slug === preselect}>
+                    {m.name} ({m.type})
+                  </option>
+                ))
+              }
+            </select>
+          </label>
+
+          <label class="block">
+            <span class="mb-1.5 block text-sm font-semibold">Nama lengkap</span>
+            <input
+              type="text"
+              name="claimantName"
+              required
+              placeholder="Nama lengkap Anda"
+              class="w-full rounded-lg border border-brand-dark/12 bg-white px-3 py-2.5 text-sm outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20"
+            />
+          </label>
+
+          <label class="block">
+            <span class="mb-1.5 block text-sm font-semibold">Email kerja</span>
+            <input
+              type="email"
+              name="claimantEmail"
+              required
+              placeholder="anda@redaksi.contoh"
+              class="w-full rounded-lg border border-brand-dark/12 bg-white px-3 py-2.5 text-sm outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20"
+            />
+          </label>
+
+          <label class="block">
+            <span class="mb-1.5 block text-sm font-semibold">Peran Anda</span>
+            <input
+              type="text"
+              name="role"
+              required
+              placeholder="mis. Pemimpin Redaksi"
+              class="w-full rounded-lg border border-brand-dark/12 bg-white px-3 py-2.5 text-sm outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20"
+            />
+          </label>
+
+          <label class="block">
+            <span class="mb-1.5 block text-sm font-semibold">Organisasi</span>
+            <input
+              type="text"
+              name="organization"
+              required
+              placeholder="Badan hukum / ruang redaksi"
+              class="w-full rounded-lg border border-brand-dark/12 bg-white px-3 py-2.5 text-sm outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20"
+            />
+          </label>
+
+          <label class="block sm:col-span-2">
+            <span class="mb-1.5 block text-sm font-semibold">Catatan pendukung</span>
+            <textarea
+              name="notes"
+              rows="4"
+              required
+              placeholder="Jelaskan singkat hubungan Anda dengan media ini dan bukti yang dapat dilampirkan."
+              class="w-full resize-y rounded-lg border border-brand-dark/12 bg-white px-3 py-2.5 text-sm outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20"
+            ></textarea>
+          </label>
+        </div>
+
+        <p id="claim-error" class="hidden text-sm font-medium text-status-danger" hidden></p>
+
+        <button
+          type="submit"
+          class="inline-flex w-full items-center justify-center rounded-lg bg-brand-accent px-5 py-3 text-sm font-semibold text-brand-dark transition hover:bg-amber-400 sm:w-auto"
+        >
+          Kirim permintaan klaim
+        </button>
+      </form>
+
+      <div
+        id="claim-success"
+        class="hidden border border-status-success/30 bg-status-success/8 p-6"
+        hidden
+        aria-live="polite"
+      >
+        <p class="text-xs font-semibold uppercase tracking-[0.16em] text-status-success">
+          Permintaan diterima
+        </p>
+        <h2 class="mt-2 font-display text-xl font-bold">Klaim tersimpan secara lokal</h2>
+        <p class="mt-2 text-sm leading-relaxed text-brand-dark/70">
+          Klaim Anda disimpan di <code class="rounded bg-white px-1 text-xs">localStorage</code> browser
+          ini untuk keperluan pratinjau mockup.
+        </p>
+        <dl id="claim-summary" class="mt-5 space-y-2 text-sm"></dl>
+        <div class="mt-6 flex flex-col gap-2 sm:flex-row">
+          <a
+            href="/directory"
+            class="inline-flex items-center justify-center rounded-lg bg-brand-primary px-4 py-2.5 text-sm font-semibold text-white hover:bg-brand-light"
+          >
+            Ke Direktori
+          </a>
+          <button
+            type="button"
+            id="claim-another"
+            class="inline-flex items-center justify-center rounded-lg border border-brand-dark/12 px-4 py-2.5 text-sm font-semibold hover:border-brand-primary/30"
+          >
+            Kirim lagi
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <aside id="claim-aside" class="mt-10 border border-brand-dark/8 bg-white p-6 lg:mt-0 lg:self-start">
+      <h2 class="font-display text-lg font-bold">Apa selanjutnya?</h2>
+      <ol class="mt-4 space-y-3 text-sm text-brand-dark/70">
+        <li class="flex gap-3">
+          <span class="font-display font-bold text-brand-accent">1</span>
+          <span
+            >Klaim Anda akan berstatus <strong class="text-brand-dark">Menunggu</strong>.</span
+          >
+        </li>
+        <li class="flex gap-3">
+          <span class="font-display font-bold text-brand-accent">2</span>
+          <span>Tim peninjau dapat Menyetujui atau Menolak (aksi mockup).</span>
+        </li>
+        <li class="flex gap-3">
+          <span class="font-display font-bold text-brand-accent">3</span>
+          <span>Klaim yang disetujui akan membuka badge Terverifikasi di sistem live.</span>
+        </li>
+      </ol>
+    </aside>
+  </section>
+</Layout>
+
+<script>
+  const STORAGE_KEY = 'mdi_claims';
+
+  type StoredClaim = {
+    id: string;
+    mediaName: string;
+    mediaSlug: string;
+    claimantName: string;
+    claimantEmail: string;
+    role: string;
+    organization: string;
+    notes: string;
+    status: 'pending' | 'approved' | 'rejected';
+    submittedAt: string;
+  };
+
+  const form = document.getElementById('claim-form') as HTMLFormElement | null;
+  const mediaSelect = document.getElementById('claim-media') as HTMLSelectElement | null;
+  const errorEl = document.getElementById('claim-error');
+  const success = document.getElementById('claim-success');
+  const summary = document.getElementById('claim-summary');
+  const another = document.getElementById('claim-another');
+
+  function readClaims(): StoredClaim[] {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    } catch {
+      return [];
+    }
+  }
+
+  function writeClaims(claims: StoredClaim[]) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(claims));
+  }
+
+  function showError(msg: string) {
+    if (!errorEl) return;
+    errorEl.textContent = msg;
+    errorEl.classList.remove('hidden');
+    errorEl.removeAttribute('hidden');
+  }
+
+  function hideError() {
+    errorEl?.classList.add('hidden');
+    errorEl?.setAttribute('hidden', '');
+  }
+
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    hideError();
+
+    const data = new FormData(form);
+    const mediaSlug = String(data.get('mediaSlug') || '');
+    const claimantName = String(data.get('claimantName') || '').trim();
+    const claimantEmail = String(data.get('claimantEmail') || '').trim();
+    const role = String(data.get('role') || '').trim();
+    const organization = String(data.get('organization') || '').trim();
+    const notes = String(data.get('notes') || '').trim();
+
+    if (!mediaSlug || !claimantName || !claimantEmail || !role || !organization || !notes) {
+      showError('Mohon lengkapi semua kolom wajib.');
+      return;
+    }
+
+    const option = mediaSelect?.selectedOptions[0];
+    const mediaName = option?.textContent?.replace(/\s*\(.*\)$/, '').trim() || mediaSlug;
+
+    const claim: StoredClaim = {
+      id: `local-${Date.now()}`,
+      mediaName,
+      mediaSlug,
+      claimantName,
+      claimantEmail,
+      role,
+      organization,
+      notes,
+      status: 'pending',
+      submittedAt: new Date().toISOString(),
+    };
+
+    const existing = readClaims();
+    existing.unshift(claim);
+    writeClaims(existing);
+
+    if (summary) {
+      summary.innerHTML = `
+        <div class="flex justify-between gap-4 border-b border-brand-dark/8 pb-2"><dt class="text-brand-dark/50">Media</dt><dd class="font-semibold">${claim.mediaName}</dd></div>
+        <div class="flex justify-between gap-4 border-b border-brand-dark/8 pb-2"><dt class="text-brand-dark/50">Pemohon</dt><dd class="font-semibold">${claim.claimantName}</dd></div>
+        <div class="flex justify-between gap-4 border-b border-brand-dark/8 pb-2"><dt class="text-brand-dark/50">Email</dt><dd class="font-semibold">${claim.claimantEmail}</dd></div>
+        <div class="flex justify-between gap-4"><dt class="text-brand-dark/50">Status</dt><dd class="font-semibold text-amber-700">Menunggu</dd></div>
+      `;
+    }
+
+    form.classList.add('hidden');
+    success?.classList.remove('hidden');
+    success?.removeAttribute('hidden');
+  });
+
+  another?.addEventListener('click', () => {
+    form?.reset();
+    form?.classList.remove('hidden');
+    success?.classList.add('hidden');
+    success?.setAttribute('hidden', '');
+    hideError();
+  });
+</script>

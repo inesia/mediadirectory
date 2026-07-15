@@ -1,0 +1,169 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import MediaCard from '../../components/MediaCard.astro';
+import { mediaOutlets, mediaTypes, provinces } from '../../lib/data';
+---
+
+<Layout
+  title="Direktori"
+  description="Jelajahi media Indonesia yang terdaftar dan terverifikasi berdasarkan jenis, wilayah, dan status."
+>
+  <section class="border-b border-brand-dark/6 bg-white">
+    <div class="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8 lg:py-12">
+      <p class="text-xs font-semibold uppercase tracking-[0.18em] text-brand-primary">
+        Direktori
+      </p>
+      <h1 class="mt-2 font-display text-3xl font-bold tracking-tight sm:text-4xl">
+        Media Indonesia
+      </h1>
+      <p class="mt-2 max-w-2xl text-sm text-brand-dark/65 sm:text-base">
+        Filter berdasarkan jenis, provinsi, atau status verifikasi. Hasil diperbarui langsung di
+        halaman ini.
+      </p>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+    <div
+      id="directory-filters"
+      class="sticky top-[57px] z-30 -mx-4 border-b border-brand-dark/8 bg-brand-bg/95 px-4 py-4 backdrop-blur sm:mx-0 sm:rounded-xl sm:border sm:px-5"
+    >
+      <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <label class="block">
+          <span class="mb-1.5 block text-[11px] font-semibold uppercase tracking-wide text-brand-dark/45"
+            >Cari</span
+          >
+          <input
+            id="filter-search"
+            type="search"
+            placeholder="Nama media atau topik…"
+            class="w-full rounded-lg border border-brand-dark/12 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20"
+          />
+        </label>
+
+        <label class="block">
+          <span class="mb-1.5 block text-[11px] font-semibold uppercase tracking-wide text-brand-dark/45"
+            >Jenis</span
+          >
+          <select
+            id="filter-type"
+            class="w-full rounded-lg border border-brand-dark/12 bg-white px-3 py-2.5 text-sm outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20"
+          >
+            <option value="">Semua jenis</option>
+            {mediaTypes.map((t) => <option value={t}>{t}</option>)}
+          </select>
+        </label>
+
+        <label class="block">
+          <span class="mb-1.5 block text-[11px] font-semibold uppercase tracking-wide text-brand-dark/45"
+            >Provinsi</span
+          >
+          <select
+            id="filter-province"
+            class="w-full rounded-lg border border-brand-dark/12 bg-white px-3 py-2.5 text-sm outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20"
+          >
+            <option value="">Semua provinsi</option>
+            {provinces.map((p) => <option value={p}>{p}</option>)}
+          </select>
+        </label>
+
+        <label class="block">
+          <span class="mb-1.5 block text-[11px] font-semibold uppercase tracking-wide text-brand-dark/45"
+            >Status</span
+          >
+          <select
+            id="filter-status"
+            class="w-full rounded-lg border border-brand-dark/12 bg-white px-3 py-2.5 text-sm outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20"
+          >
+            <option value="">Semua status</option>
+            <option value="verified">Terverifikasi</option>
+            <option value="review">Ditinjau</option>
+            <option value="suspended">Ditangguhkan</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="mt-3 flex items-center justify-between gap-3">
+        <p class="text-sm text-brand-dark/55">
+          Menampilkan <span id="result-count" class="font-semibold text-brand-dark"
+            >{mediaOutlets.length}</span
+          > media
+        </p>
+        <button
+          type="button"
+          id="filter-reset"
+          class="text-sm font-semibold text-brand-primary hover:text-brand-light"
+        >
+          Reset filter
+        </button>
+      </div>
+    </div>
+
+    <div id="media-grid" class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {mediaOutlets.map((media) => <MediaCard media={media} />)}
+    </div>
+
+    <p id="empty-state" class="mt-12 hidden text-center text-sm text-brand-dark/55" hidden>
+      Tidak ada media yang cocok dengan filter Anda. Coba hapus satu atau beberapa filter.
+    </p>
+  </section>
+</Layout>
+
+<script>
+  const search = document.getElementById('filter-search') as HTMLInputElement | null;
+  const type = document.getElementById('filter-type') as HTMLSelectElement | null;
+  const province = document.getElementById('filter-province') as HTMLSelectElement | null;
+  const status = document.getElementById('filter-status') as HTMLSelectElement | null;
+  const reset = document.getElementById('filter-reset');
+  const countEl = document.getElementById('result-count');
+  const empty = document.getElementById('empty-state');
+  const cards = Array.from(document.querySelectorAll<HTMLElement>('.media-card'));
+
+  function applyFilters() {
+    const q = (search?.value || '').trim().toLowerCase();
+    const t = type?.value || '';
+    const p = province?.value || '';
+    const s = status?.value || '';
+
+    let visible = 0;
+
+    cards.forEach((card) => {
+      const name = card.dataset.name || '';
+      const cats = card.dataset.categories || '';
+      const matchQ = !q || name.includes(q) || cats.includes(q);
+      const matchT = !t || card.dataset.type === t;
+      const matchP = !p || card.dataset.province === p;
+      const matchS = !s || card.dataset.status === s;
+      const show = matchQ && matchT && matchP && matchS;
+      card.classList.toggle('hidden', !show);
+      if (show) visible += 1;
+    });
+
+    if (countEl) countEl.textContent = String(visible);
+    const isEmpty = visible === 0;
+    empty?.classList.toggle('hidden', !isEmpty);
+    empty?.toggleAttribute('hidden', !isEmpty);
+  }
+
+  [search, type, province, status].forEach((el) => {
+    el?.addEventListener('input', applyFilters);
+    el?.addEventListener('change', applyFilters);
+  });
+
+  reset?.addEventListener('click', () => {
+    if (search) search.value = '';
+    if (type) type.value = '';
+    if (province) province.value = '';
+    if (status) status.value = '';
+    applyFilters();
+    history.replaceState(null, '', '/directory');
+  });
+
+  // Prefill dari query hero search (?q=&type=&province=)
+  const params = new URLSearchParams(window.location.search);
+  if (search && params.has('q')) search.value = params.get('q') || '';
+  if (type && params.has('type')) type.value = params.get('type') || '';
+  if (province && params.has('province')) province.value = params.get('province') || '';
+  if (status && params.has('status')) status.value = params.get('status') || '';
+  applyFilters();
+</script>

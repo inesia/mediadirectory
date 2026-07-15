@@ -1,0 +1,213 @@
+@import "tailwindcss";
+@import "@fontsource-variable/plus-jakarta-sans";
+
+@theme {
+  --color-brand-primary: #4c1d95;
+  --color-brand-light: #6d28d9;
+  --color-brand-accent: #f59e0b;
+  --color-brand-dark: #111827;
+  --color-brand-bg: #fafafa;
+  --color-status-success: #10b981;
+  --color-status-pending: #f59e0b;
+  --color-status-danger: #f43f5e;
+
+  --font-display:
+    "Plus Jakarta Sans Variable", "Plus Jakarta Sans", ui-sans-serif, system-ui,
+    sans-serif;
+  --font-sans:
+    "Plus Jakarta Sans Variable", "Plus Jakarta Sans", ui-sans-serif, system-ui,
+    sans-serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-brand-bg font-sans text-brand-dark antialiased;
+  }
+
+  ::selection {
+    @apply bg-brand-accent/30 text-brand-dark;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* =====================================================
+   HERO SECTION — Premium Dark Gradient
+   ===================================================== */
+
+.hero-bg {
+  background: radial-gradient(
+    ellipse 180% 60% at 50% 0%,
+    #3b0ea6 0%,
+    #1e0f4c 45%,
+    #0d0625 80%,
+    #080416 100%
+  );
+}
+
+/* Glowing separator at bottom of full-screen hero */
+.hero-section::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(139, 92, 246, 0.55) 40%,
+    rgba(245, 158, 11, 0.45) 60%,
+    transparent
+  );
+}
+
+
+/* Subtle dot-grid pattern */
+.hero-dots {
+  background-image: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.06) 1px,
+    transparent 1px
+  );
+  background-size: 32px 32px;
+  mask-image: radial-gradient(
+    ellipse 80% 80% at 50% 40%,
+    black 40%,
+    transparent 100%
+  );
+}
+
+/* Animated blobs */
+.hero-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  will-change: transform, opacity;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+
+.hero-blob-1 {
+  width: 520px;
+  height: 520px;
+  top: -120px;
+  left: -160px;
+  background: radial-gradient(
+    circle,
+    rgba(109, 40, 217, 0.55) 0%,
+    rgba(76, 29, 149, 0.2) 70%,
+    transparent 100%
+  );
+  animation: blob-drift-1 12s ease-in-out infinite alternate;
+}
+.hero-blob-2 {
+  width: 480px;
+  height: 480px;
+  top: -80px;
+  right: -100px;
+  background: radial-gradient(
+    circle,
+    rgba(139, 92, 246, 0.4) 0%,
+    rgba(76, 29, 149, 0.15) 70%,
+    transparent 100%
+  );
+  animation: blob-drift-2 15s ease-in-out infinite alternate;
+}
+.hero-blob-3 {
+  width: 380px;
+  height: 380px;
+  bottom: 60px;
+  left: 20%;
+  background: radial-gradient(
+    circle,
+    rgba(245, 158, 11, 0.18) 0%,
+    rgba(251, 191, 36, 0.06) 70%,
+    transparent 100%
+  );
+  animation: blob-drift-3 18s ease-in-out infinite alternate;
+}
+.hero-blob-4 {
+  width: 300px;
+  height: 300px;
+  top: 40%;
+  right: 10%;
+  background: radial-gradient(
+    circle,
+    rgba(167, 139, 250, 0.25) 0%,
+    transparent 70%
+  );
+  animation: blob-drift-1 10s ease-in-out 3s infinite alternate;
+}
+
+@keyframes blob-drift-1 {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(30px, -20px) scale(1.04);
+  }
+  66% {
+    transform: translate(-15px, 25px) scale(0.97);
+  }
+  100% {
+    transform: translate(20px, 10px) scale(1.02);
+  }
+}
+@keyframes blob-drift-2 {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(-25px, 30px) scale(1.06);
+  }
+  66% {
+    transform: translate(20px, -15px) scale(0.96);
+  }
+  100% {
+    transform: translate(-10px, 20px) scale(1.03);
+  }
+}
+@keyframes blob-drift-3 {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  50% {
+    transform: translate(20px, -30px) scale(1.08);
+  }
+  100% {
+    transform: translate(-20px, 15px) scale(0.95);
+  }
+}
+
+/* Gradient headline text */
+.hero-gradient-text {
+  background: linear-gradient(105deg, #c4b5fd 0%, #f59e0b 60%, #fde68a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Badge fade-in */
+.hero-badges {
+  animation: badge-fade-in 1.2s ease 0.4s forwards;
+}
+@keyframes badge-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

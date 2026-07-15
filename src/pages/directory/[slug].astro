@@ -1,0 +1,155 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import StatusBadge from '../../components/StatusBadge.astro';
+import { getMediaBySlug, mediaOutlets } from '../../lib/data';
+
+export function getStaticPaths() {
+  return mediaOutlets.map((media) => ({
+    params: { slug: media.slug },
+  }));
+}
+
+const { slug } = Astro.params;
+const media = getMediaBySlug(slug!);
+
+if (!media) {
+  return Astro.redirect('/directory');
+}
+
+const related = mediaOutlets
+  .filter((m) => m.id !== media.id && (m.type === media.type || m.province === media.province))
+  .slice(0, 3);
+---
+
+<Layout title={media.name} description={media.description}>
+  <section class="border-b border-brand-dark/6 bg-white">
+    <div class="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
+      <a
+        href="/directory"
+        class="text-sm font-medium text-brand-primary hover:text-brand-light"
+      >
+        ← Kembali ke direktori
+      </a>
+
+      <div class="mt-6 flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+        <div class="flex gap-4">
+          <div
+            class="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-brand-primary font-display text-xl font-bold text-white sm:h-20 sm:w-20 sm:text-2xl"
+            aria-hidden="true"
+          >
+            {media.name.slice(0, 2).toUpperCase()}
+          </div>
+          <div>
+            <div class="flex flex-wrap items-center gap-2">
+              <h1 class="font-display text-3xl font-bold tracking-tight sm:text-4xl">
+                {media.name}
+              </h1>
+              <StatusBadge status={media.status} size="md" />
+            </div>
+            <p class="mt-2 text-sm text-brand-dark/55">
+              {media.type} · {media.city}, {media.province} · Didirikan {media.founded}
+            </p>
+            <div class="mt-3 flex flex-wrap gap-1.5">
+              {
+                media.categories.map((cat) => (
+                  <span class="rounded-md bg-brand-bg px-2.5 py-1 text-xs font-medium text-brand-dark/60">
+                    {cat}
+                  </span>
+                ))
+              }
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-2 sm:flex-row lg:flex-col lg:items-stretch">
+          <a
+            href={media.website}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center justify-center rounded-lg border border-brand-dark/12 bg-white px-4 py-2.5 text-sm font-semibold text-brand-dark transition hover:border-brand-primary/30 hover:text-brand-primary"
+          >
+            Kunjungi situs
+          </a>
+          <a
+            href={`/claim?media=${media.slug}`}
+            class="inline-flex items-center justify-center rounded-lg bg-brand-accent px-4 py-2.5 text-sm font-semibold text-brand-dark transition hover:bg-amber-400"
+          >
+            Klaim media ini
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:grid lg:grid-cols-[1.4fr_0.6fr] lg:gap-10 lg:px-8 lg:py-12">
+    <div>
+      <h2 class="font-display text-xl font-bold">Tentang</h2>
+      <p class="mt-3 text-sm leading-relaxed text-brand-dark/75 sm:text-base">
+        {media.description}
+      </p>
+
+      <dl class="mt-8 grid gap-4 sm:grid-cols-2">
+        <div class="border border-brand-dark/8 bg-white p-4">
+          <dt class="text-[11px] font-semibold uppercase tracking-wide text-brand-dark/45">
+            Jangkauan audiens
+          </dt>
+          <dd class="mt-1 font-display text-lg font-bold">{media.reach}</dd>
+        </div>
+        <div class="border border-brand-dark/8 bg-white p-4">
+          <dt class="text-[11px] font-semibold uppercase tracking-wide text-brand-dark/45">
+            Verifikasi
+          </dt>
+          <dd class="mt-1 text-sm font-medium">
+            {
+              media.verifiedAt
+                ? `Terverifikasi pada ${new Date(media.verifiedAt).toLocaleDateString('id-ID', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric',
+                  })}`
+                : 'Belum terverifikasi'
+            }
+          </dd>
+        </div>
+        <div class="border border-brand-dark/8 bg-white p-4">
+          <dt class="text-[11px] font-semibold uppercase tracking-wide text-brand-dark/45">
+            Lokasi
+          </dt>
+          <dd class="mt-1 text-sm font-medium">{media.city}, {media.province}</dd>
+        </div>
+        <div class="border border-brand-dark/8 bg-white p-4">
+          <dt class="text-[11px] font-semibold uppercase tracking-wide text-brand-dark/45">
+            Situs web
+          </dt>
+          <dd class="mt-1 truncate text-sm font-medium text-brand-primary">
+            <a href={media.website} target="_blank" rel="noopener noreferrer">{media.website}</a>
+          </dd>
+        </div>
+      </dl>
+    </div>
+
+    <aside class="mt-10 lg:mt-0">
+      <h2 class="font-display text-xl font-bold">Media terkait</h2>
+      <ul class="mt-4 space-y-3">
+        {
+          related.map((item) => (
+            <li>
+              <a
+                href={`/directory/${item.slug}`}
+                class="flex items-center justify-between gap-3 border border-brand-dark/8 bg-white p-4 transition hover:border-brand-primary/25"
+              >
+                <span>
+                  <span class="block font-semibold">{item.name}</span>
+                  <span class="mt-0.5 block text-xs text-brand-dark/50">
+                    {item.type} · {item.city}
+                  </span>
+                </span>
+                <StatusBadge status={item.status} />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </aside>
+  </section>
+</Layout>
