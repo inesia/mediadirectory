@@ -1,0 +1,151 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout
+  title="Permintaan Terkirim"
+  description="Konfirmasi pengajuan daftar atau klaim media."
+>
+  <section class="mx-auto max-w-2xl px-4 py-14 sm:px-6 sm:py-20 lg:px-8">
+    <div
+      id="success-card"
+      class="border border-status-success/25 bg-white p-6 sm:p-10"
+    >
+      <div
+        class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-status-success/12 text-status-success"
+        aria-hidden="true"
+      >
+        <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+      </div>
+
+      <p
+        id="success-eyebrow"
+        class="mt-6 text-center text-xs font-semibold uppercase tracking-[0.18em] text-status-success"
+      >
+        Permintaan terkirim
+      </p>
+      <h1
+        id="success-title"
+        class="mt-2 text-center font-display text-2xl font-bold tracking-tight sm:text-3xl"
+      >
+        Terima kasih!
+      </h1>
+      <p
+        id="success-desc"
+        class="mx-auto mt-3 max-w-md text-center text-sm leading-relaxed text-brand-dark/65 sm:text-base"
+      >
+        Pengajuan Anda sedang diproses. Tim kami akan meninjau data dalam 1–3 hari kerja.
+      </p>
+
+      <dl
+        id="success-summary"
+        class="mt-8 space-y-3 rounded-xl border border-brand-dark/8 bg-brand-bg p-5 text-sm"
+      >
+      </dl>
+
+      <!-- Next steps -->
+      <div class="mt-8 border-t border-brand-dark/8 pt-8">
+        <h2 class="font-display text-base font-bold">Langkah selanjutnya</h2>
+        <ol id="success-steps" class="mt-4 space-y-3 text-sm text-brand-dark/70">
+        </ol>
+      </div>
+
+      <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
+        <a
+          href="/directory"
+          class="inline-flex items-center justify-center rounded-lg bg-brand-primary px-5 py-3 text-sm font-semibold text-white transition hover:bg-brand-light"
+        >
+          Lihat Direktori
+        </a>
+        <a
+          id="success-again"
+          href="/claim"
+          class="inline-flex items-center justify-center rounded-lg border border-brand-dark/12 px-5 py-3 text-sm font-semibold text-brand-dark transition hover:border-brand-primary/30"
+        >
+          Ajukan lagi
+        </a>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  type SuccessPayload = {
+    type: 'daftar' | 'klaim';
+    id: string;
+    title: string;
+    rows: { label: string; value: string }[];
+    submittedAt: string;
+  };
+
+  const payloadRaw = sessionStorage.getItem('mdi_last_submission');
+  const eyebrow = document.getElementById('success-eyebrow');
+  const title = document.getElementById('success-title');
+  const desc = document.getElementById('success-desc');
+  const summary = document.getElementById('success-summary');
+  const steps = document.getElementById('success-steps');
+  const again = document.getElementById('success-again') as HTMLAnchorElement | null;
+
+  let payload: SuccessPayload | null = null;
+  try {
+    payload = payloadRaw ? (JSON.parse(payloadRaw) as SuccessPayload) : null;
+  } catch {
+    payload = null;
+  }
+
+  const type =
+    payload?.type ||
+    (new URLSearchParams(window.location.search).get('type') === 'daftar' ? 'daftar' : 'klaim');
+
+  if (type === 'daftar') {
+    if (eyebrow) eyebrow.textContent = 'Pendaftaran terkirim';
+    if (title) title.textContent = 'Media berhasil didaftarkan';
+    if (desc)
+      desc.textContent =
+        'Listing media Anda sudah masuk antrean tinjauan. Status awal biasanya Unverified hingga diverifikasi.';
+    if (again) again.href = '/claim?tab=daftar';
+    if (steps) {
+      steps.innerHTML = `
+        <li class="flex gap-3"><span class="font-display font-bold text-brand-accent">1</span><span>Tim meninjau kelengkapan data media Anda.</span></li>
+        <li class="flex gap-3"><span class="font-display font-bold text-brand-accent">2</span><span>Jika lolos, listing muncul di direktori publik.</span></li>
+        <li class="flex gap-3"><span class="font-display font-bold text-brand-accent">3</span><span>Anda bisa mengajukan klaim kepemilikan setelah listing aktif.</span></li>
+      `;
+    }
+  } else {
+    if (eyebrow) eyebrow.textContent = 'Klaim terkirim';
+    if (title) title.textContent = 'Permintaan klaim diterima';
+    if (desc)
+      desc.textContent =
+        'Klaim kepemilikan media Anda sedang ditinjau. Kami akan menghubungi email verifikasi yang Anda cantumkan.';
+    if (again) again.href = '/claim?tab=klaim';
+    if (steps) {
+      steps.innerHTML = `
+        <li class="flex gap-3"><span class="font-display font-bold text-brand-accent">1</span><span>Cek email verifikasi untuk konfirmasi identitas.</span></li>
+        <li class="flex gap-3"><span class="font-display font-bold text-brand-accent">2</span><span>Tim meninjau hubungan Anda dengan media yang diklaim.</span></li>
+        <li class="flex gap-3"><span class="font-display font-bold text-brand-accent">3</span><span>Jika disetujui, akses pengelolaan listing akan dibuka.</span></li>
+      `;
+    }
+  }
+
+  if (summary) {
+    const rows =
+      payload?.rows?.length
+        ? payload.rows
+        : [
+            { label: 'Status', value: 'Menunggu tinjauan' },
+            { label: 'Catatan', value: 'Data prototyping (field boleh kosong)' },
+          ];
+
+    summary.innerHTML = rows
+      .map(
+        (row, i) => `
+      <div class="flex justify-between gap-4 ${i < rows.length - 1 ? 'border-b border-brand-dark/8 pb-3' : ''}">
+        <dt class="text-brand-dark/50">${row.label}</dt>
+        <dd class="text-right font-semibold text-brand-dark">${row.value || '—'}</dd>
+      </div>`,
+      )
+      .join('');
+  }
+</script>

@@ -1,0 +1,479 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import {
+  mediaOutlets,
+  mediaTypes,
+  mediaStatuses,
+  userRoles,
+  userStatuses,
+} from '../../lib/data';
+
+const preselect = Astro.url.searchParams.get('media') || '';
+const initialTab = Astro.url.searchParams.get('tab') === 'klaim' ? 'klaim' : 'daftar';
+
+const fieldClass =
+  'w-full rounded-lg border border-brand-dark/12 bg-white px-3 py-2.5 text-sm outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20';
+const labelClass = 'mb-1.5 block text-sm font-semibold';
+const req = '<span class="text-status-danger">*</span>';
+
+const statusLabels: Record<string, string> = {
+  verified: 'Verified',
+  unverified: 'Unverified',
+  review: 'Reviewed',
+  suspended: 'Suspended',
+};
+
+const userStatusLabels: Record<string, string> = {
+  active: 'Aktif',
+  pending: 'Menunggu',
+  suspended: 'Ditangguhkan',
+};
+---
+
+<Layout
+  title="Daftar & Klaim Media"
+  description="Daftarkan media baru atau ajukan klaim kepemilikan listing di Media Directory Indonesia."
+>
+  <section class="border-b border-brand-dark/6 bg-white">
+    <div class="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8 lg:py-12">
+      <p class="text-xs font-semibold uppercase tracking-[0.18em] text-brand-accent">
+        Daftar & Klaim
+      </p>
+      <h1 class="mt-2 font-display text-3xl font-bold tracking-tight sm:text-4xl">
+        Daftarkan atau klaim media Anda
+      </h1>
+      <p class="mt-2 max-w-2xl text-sm text-brand-dark/65 sm:text-base">
+        Lengkapi data media dan profil pengguna. Kolom bertanda * wajib diisi.
+      </p>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
+    <!-- Tabs -->
+    <div
+      class="flex gap-1 border-b border-brand-dark/8"
+      role="tablist"
+      aria-label="Formulir"
+    >
+      <button
+        type="button"
+        role="tab"
+        id="tab-daftar"
+        data-tab="daftar"
+        aria-selected={initialTab === 'daftar'}
+        aria-controls="panel-daftar"
+        class:list={[
+          'form-tab -mb-px border-b-2 px-4 py-2.5 text-sm font-semibold transition',
+          initialTab === 'daftar'
+            ? 'border-brand-primary text-brand-primary'
+            : 'border-transparent text-brand-dark/50 hover:text-brand-dark',
+        ]}
+      >
+        Daftarkan Media
+      </button>
+      <button
+        type="button"
+        role="tab"
+        id="tab-klaim"
+        data-tab="klaim"
+        aria-selected={initialTab === 'klaim'}
+        aria-controls="panel-klaim"
+        class:list={[
+          'form-tab -mb-px border-b-2 px-4 py-2.5 text-sm font-semibold transition',
+          initialTab === 'klaim'
+            ? 'border-brand-primary text-brand-primary'
+            : 'border-transparent text-brand-dark/50 hover:text-brand-dark',
+        ]}
+      >
+        Klaim Media
+      </button>
+    </div>
+
+    <!-- ===================== DAFTAR MEDIA ===================== -->
+    <div
+      id="panel-daftar"
+      role="tabpanel"
+      aria-labelledby="tab-daftar"
+      class:list={['mt-8', initialTab !== 'daftar' && 'hidden']}
+      hidden={initialTab !== 'daftar'}
+    >
+      <form id="daftar-form" class="space-y-8" novalidate>
+        <!-- Identitas -->
+        <fieldset class="space-y-5">
+          <legend class="font-display text-lg font-bold text-brand-primary">Data Media</legend>
+          <div class="grid gap-5 sm:grid-cols-2">
+            <label class="block sm:col-span-2">
+              <span class={labelClass} set:html={`Nama Media ${req}`} />
+              <input type="text" name="name"  placeholder="Contoh: Kompas" class={fieldClass} />
+            </label>
+            <label class="block sm:col-span-2">
+              <span class={labelClass} set:html={`Domain / URL ${req}`} />
+              <input type="url" name="domain"  placeholder="https://www.contoh.com" class={fieldClass} />
+            </label>
+            <label class="block">
+              <span class={labelClass} set:html={`Logo ${req}`} />
+              <input type="file" name="logo" accept="image/*"  class={fieldClass} />
+            </label>
+            <label class="block">
+              <span class={labelClass} set:html={`Image / Screenshot ${req}`} />
+              <input type="file" name="images" accept="image/*" multiple  class={fieldClass} />
+              <span class="mt-1 block text-xs text-brand-dark/45">Bisa unggah lebih dari satu file</span>
+            </label>
+            <label class="block sm:col-span-2">
+              <span class={labelClass} set:html={`Deskripsi / About Us ${req}`} />
+              <textarea name="description" rows="4"  placeholder="Ceritakan singkat tentang media Anda" class={fieldClass}></textarea>
+            </label>
+            <label class="block">
+              <span class={labelClass} set:html={`Status ${req}`} />
+              <select name="status"  class={fieldClass}>
+                <option value="">Pilih status…</option>
+                {mediaStatuses.map((s) => <option value={s}>{statusLabels[s]}</option>)}
+              </select>
+            </label>
+            <label class="block">
+              <span class={labelClass} set:html={`Jenis Media ${req}`} />
+              <select name="type"  class={fieldClass}>
+                <option value="">Pilih jenis…</option>
+                {mediaTypes.map((t) => <option value={t}>{t}</option>)}
+              </select>
+            </label>
+            <label class="block">
+              <span class={labelClass}>Nama Perusahaan</span>
+              <input type="text" name="companyName" placeholder="PT / badan hukum" class={fieldClass} />
+            </label>
+            <label class="block">
+              <span class={labelClass}>Tahun Berdiri</span>
+              <input type="number" name="founded" min="1800" max="2100" placeholder="mis. 2010" class={fieldClass} />
+            </label>
+          </div>
+        </fieldset>
+
+        <!-- Alamat -->
+        <fieldset class="space-y-5">
+          <legend class="font-display text-lg font-bold text-brand-primary">Alamat</legend>
+          <div class="grid gap-5 sm:grid-cols-2">
+            <label class="block sm:col-span-2">
+              <span class={labelClass} set:html={`Alamat lengkap ${req}`} />
+              <input type="text" name="street"  placeholder="Jl. … No. …" class={fieldClass} />
+            </label>
+            <label class="block">
+              <span class={labelClass} set:html={`Kecamatan ${req}`} />
+              <input type="text" name="district"  class={fieldClass} />
+            </label>
+            <label class="block">
+              <span class={labelClass} set:html={`Kota ${req}`} />
+              <input type="text" name="city"  class={fieldClass} />
+            </label>
+            <label class="block sm:col-span-2">
+              <span class={labelClass} set:html={`Provinsi ${req}`} />
+              <input type="text" name="province"  class={fieldClass} />
+            </label>
+          </div>
+        </fieldset>
+
+        <!-- Kontak -->
+        <fieldset class="space-y-5">
+          <legend class="font-display text-lg font-bold text-brand-primary">Kontak</legend>
+          <div class="grid gap-5 sm:grid-cols-2">
+            <label class="block">
+              <span class={labelClass} set:html={`Telepon / WhatsApp ${req}`} />
+              <input type="tel" name="phone"  placeholder="08…" class={fieldClass} />
+            </label>
+            <label class="block">
+              <span class={labelClass} set:html={`Email Redaksi ${req}`} />
+              <input type="email" name="email"  placeholder="redaksi@contoh.com" class={fieldClass} />
+            </label>
+          </div>
+        </fieldset>
+
+        <!-- Sosial -->
+        <fieldset class="space-y-5">
+          <legend class="font-display text-lg font-bold text-brand-primary">Media Sosial</legend>
+          <div class="grid gap-5 sm:grid-cols-2">
+            {
+              [
+                ['facebook', 'Facebook'],
+                ['instagram', 'Instagram'],
+                ['tiktok', 'TikTok'],
+                ['youtube', 'YouTube'],
+                ['x', 'X'],
+                ['threads', 'Threads'],
+                ['linkedin', 'LinkedIn'],
+                ['telegram', 'Telegram'],
+              ].map(([name, label]) => (
+                <label class="block">
+                  <span class={labelClass}>{label}</span>
+                  <input type="url" name={name} placeholder="https://…" class={fieldClass} />
+                </label>
+              ))
+            }
+          </div>
+        </fieldset>
+
+        <p class="text-xs text-brand-dark/45">
+          Mode prototyping: validasi field sementara dinonaktifkan — submit boleh kosong.
+        </p>
+
+        <button
+          type="submit"
+          class="inline-flex w-full items-center justify-center rounded-lg bg-brand-accent px-5 py-3 text-sm font-semibold text-brand-dark transition hover:bg-amber-400 sm:w-auto"
+        >
+          Kirim pendaftaran media
+        </button>
+      </form>
+    </div>
+
+    <!-- ===================== KLAIM MEDIA ===================== -->
+    <div
+      id="panel-klaim"
+      role="tabpanel"
+      aria-labelledby="tab-klaim"
+      class:list={['mt-8', initialTab !== 'klaim' && 'hidden']}
+      hidden={initialTab !== 'klaim'}
+    >
+      <form id="klaim-form" class="space-y-8" novalidate>
+        <fieldset class="space-y-5">
+          <legend class="font-display text-lg font-bold text-brand-primary">Klaim Media</legend>
+          <label class="block">
+            <span class={labelClass} set:html={`Pilih media yang diklaim ${req}`} />
+            <select name="claimedMedia" id="claim-media"  class={fieldClass}>
+              <option value="">Pilih media…</option>
+              {
+                mediaOutlets.map((item) => (
+                  <option value={item.slug} selected={item.slug === preselect}>
+                    {item.name} ({item.type})
+                  </option>
+                ))
+              }
+            </select>
+          </label>
+        </fieldset>
+
+        <fieldset class="space-y-5">
+          <legend class="font-display text-lg font-bold text-brand-primary">Data Pengguna</legend>
+          <div class="grid gap-5 sm:grid-cols-2">
+            <label class="block">
+              <span class={labelClass} set:html={`Nama ${req}`} />
+              <input type="text" name="userName"  placeholder="Nama lengkap" class={fieldClass} />
+            </label>
+            <label class="block">
+              <span class={labelClass} set:html={`Email ${req}`} />
+              <input type="email" name="userEmail"  placeholder="anda@email.com" class={fieldClass} />
+            </label>
+            <label class="block">
+              <span class={labelClass} set:html={`Telepon / WhatsApp ${req}`} />
+              <input type="tel" name="userPhone"  placeholder="08…" class={fieldClass} />
+            </label>
+            <label class="block">
+              <span class={labelClass} set:html={`Email Verifikasi ${req}`} />
+              <input type="email" name="verificationEmail"  placeholder="email@domain-media.com" class={fieldClass} />
+            </label>
+            <label class="block sm:col-span-2">
+              <span class={labelClass}>Bio</span>
+              <textarea name="bio" rows="3" placeholder="Peran / latar belakang singkat" class={fieldClass}></textarea>
+            </label>
+            <label class="block">
+              <span class={labelClass} set:html={`Status ${req}`} />
+              <select name="userStatus"  class={fieldClass}>
+                <option value="">Pilih status…</option>
+                {userStatuses.map((s) => <option value={s}>{userStatusLabels[s]}</option>)}
+              </select>
+            </label>
+            <label class="block">
+              <span class={labelClass} set:html={`Role ${req}`} />
+              <select name="userRole"  class={fieldClass}>
+                <option value="">Pilih role…</option>
+                {userRoles.map((r) => <option value={r}>{r}</option>)}
+              </select>
+            </label>
+          </div>
+        </fieldset>
+
+        <p class="text-xs text-brand-dark/45">
+          Mode prototyping: validasi field sementara dinonaktifkan — submit boleh kosong.
+        </p>
+
+        <button
+          type="submit"
+          class="inline-flex w-full items-center justify-center rounded-lg bg-brand-accent px-5 py-3 text-sm font-semibold text-brand-dark transition hover:bg-amber-400 sm:w-auto"
+        >
+          Kirim permintaan klaim
+        </button>
+      </form>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  const MEDIA_KEY = 'mdi_media_registrations';
+  const CLAIM_KEY = 'mdi_claims';
+
+  function activateTab(tab: string) {
+    document.querySelectorAll<HTMLButtonElement>('.form-tab').forEach((b) => {
+      const on = b.dataset.tab === tab;
+      b.setAttribute('aria-selected', String(on));
+      b.classList.toggle('border-brand-primary', on);
+      b.classList.toggle('text-brand-primary', on);
+      b.classList.toggle('border-transparent', !on);
+      b.classList.toggle('text-brand-dark/50', !on);
+    });
+    document.querySelectorAll('[role="tabpanel"]').forEach((panel) => {
+      const show = panel.id === `panel-${tab}`;
+      panel.classList.toggle('hidden', !show);
+      panel.toggleAttribute('hidden', !show);
+    });
+  }
+
+  document.querySelectorAll<HTMLButtonElement>('.form-tab').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const tab = btn.dataset.tab;
+      if (tab) activateTab(tab);
+    });
+  });
+
+  const params = new URLSearchParams(window.location.search);
+  const tabFromUrl = params.get('tab') === 'klaim' ? 'klaim' : 'daftar';
+  const mediaFromUrl = params.get('media') || '';
+  const mediaSelect = document.getElementById('claim-media') as HTMLSelectElement | null;
+
+  activateTab(tabFromUrl);
+  if (mediaFromUrl && mediaSelect) mediaSelect.value = mediaFromUrl;
+
+  function val(data: FormData, key: string) {
+    return String(data.get(key) || '').trim();
+  }
+
+  function orDefault(value: string, fallback: string) {
+    return value || fallback;
+  }
+
+  function goToSuccess(payload: {
+    type: 'daftar' | 'klaim';
+    id: string;
+    title: string;
+    rows: { label: string; value: string }[];
+    submittedAt: string;
+  }) {
+    sessionStorage.setItem('mdi_last_submission', JSON.stringify(payload));
+    window.location.href = `/claim/success?type=${payload.type}`;
+  }
+
+  // ---- Daftar Media (validation bypassed for prototyping) ----
+  const daftarForm = document.getElementById('daftar-form') as HTMLFormElement | null;
+
+  daftarForm?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const data = new FormData(daftarForm);
+    const logoFile = data.get('logo') as File | null;
+    const imageFiles = data
+      .getAll('images')
+      .filter((f) => f instanceof File && f.size > 0) as File[];
+
+    const record = {
+      id: `media-${Date.now()}`,
+      name: orDefault(val(data, 'name'), 'Media Tanpa Nama'),
+      domain: orDefault(val(data, 'domain'), 'https://example.com'),
+      logo: logoFile?.name || '',
+      images: imageFiles.map((f) => f.name),
+      description: orDefault(val(data, 'description'), 'Deskripsi belum diisi (prototyping).'),
+      status: orDefault(val(data, 'status'), 'unverified'),
+      companyName: val(data, 'companyName'),
+      founded: val(data, 'founded'),
+      address: {
+        street: orDefault(val(data, 'street'), '—'),
+        district: orDefault(val(data, 'district'), '—'),
+        city: orDefault(val(data, 'city'), '—'),
+        province: orDefault(val(data, 'province'), '—'),
+      },
+      contact: {
+        phone: orDefault(val(data, 'phone'), '—'),
+        email: orDefault(val(data, 'email'), '—'),
+      },
+      social: {
+        facebook: val(data, 'facebook'),
+        instagram: val(data, 'instagram'),
+        tiktok: val(data, 'tiktok'),
+        youtube: val(data, 'youtube'),
+        x: val(data, 'x'),
+        threads: val(data, 'threads'),
+        linkedin: val(data, 'linkedin'),
+        telegram: val(data, 'telegram'),
+      },
+      type: orDefault(val(data, 'type'), 'Website'),
+      submittedAt: new Date().toISOString(),
+    };
+
+    const existing = JSON.parse(localStorage.getItem(MEDIA_KEY) || '[]');
+    existing.unshift(record);
+    localStorage.setItem(MEDIA_KEY, JSON.stringify(existing));
+
+    goToSuccess({
+      type: 'daftar',
+      id: record.id,
+      title: record.name,
+      submittedAt: record.submittedAt,
+      rows: [
+        { label: 'Nama Media', value: record.name },
+        { label: 'Domain', value: record.domain },
+        { label: 'Jenis', value: record.type },
+        { label: 'Status', value: record.status },
+        { label: 'Kota', value: record.address.city },
+      ],
+    });
+  });
+
+  // ---- Klaim Media (validation bypassed for prototyping) ----
+  const klaimForm = document.getElementById('klaim-form') as HTMLFormElement | null;
+
+  klaimForm?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const data = new FormData(klaimForm);
+
+    const claimedMedia = orDefault(
+      val(data, 'claimedMedia'),
+      mediaSelect?.options[1]?.value || 'kompas',
+    );
+    const option = [...(mediaSelect?.options || [])].find((o) => o.value === claimedMedia);
+    const mediaName =
+      option?.textContent?.replace(/\s*\(.*\)$/, '').trim() || claimedMedia;
+
+    const record = {
+      id: `claim-${Date.now()}`,
+      mediaName,
+      mediaSlug: claimedMedia,
+      user: {
+        name: orDefault(val(data, 'userName'), 'Pengguna Prototipe'),
+        email: orDefault(val(data, 'userEmail'), 'prototype@example.com'),
+        phone: orDefault(val(data, 'userPhone'), '—'),
+        bio: val(data, 'bio'),
+        verificationEmail: orDefault(
+          val(data, 'verificationEmail'),
+          orDefault(val(data, 'userEmail'), 'prototype@example.com'),
+        ),
+        status: orDefault(val(data, 'userStatus'), 'pending'),
+        role: orDefault(val(data, 'userRole'), 'Owner'),
+        claimedMediaSlug: claimedMedia,
+      },
+      status: 'pending',
+      submittedAt: new Date().toISOString(),
+    };
+
+    const existing = JSON.parse(localStorage.getItem(CLAIM_KEY) || '[]');
+    existing.unshift(record);
+    localStorage.setItem(CLAIM_KEY, JSON.stringify(existing));
+
+    goToSuccess({
+      type: 'klaim',
+      id: record.id,
+      title: record.mediaName,
+      submittedAt: record.submittedAt,
+      rows: [
+        { label: 'Media diklaim', value: record.mediaName },
+        { label: 'Nama', value: record.user.name },
+        { label: 'Email', value: record.user.email },
+        { label: 'Role', value: record.user.role },
+        { label: 'Status klaim', value: 'Menunggu tinjauan' },
+      ],
+    });
+  });
+</script>

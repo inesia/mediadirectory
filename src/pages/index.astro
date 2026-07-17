@@ -66,7 +66,7 @@ const latest = [...mediaOutlets]
         ></span>
         <span
           class="text-[11px] font-semibold uppercase tracking-widest text-white/75"
-          >Direktori Media Indonesia</span
+          >Registri outlet berita</span
         >
       </div>
 
@@ -202,21 +202,20 @@ const latest = [...mediaOutlets]
         </div>
       </form>
 
-      <!-- Stats row -->
-      <div class="mt-6 flex items-center gap-4">
+      <!-- Stats + standout CTA -->
+      <div class="mt-8 flex flex-col items-center gap-4">
         <p class="text-[11px] font-semibold text-white/55">
           <span class="text-white/90">{stats.total}</span> media terdaftar &nbsp;·&nbsp;
           <span class="text-white/90">{stats.verified}</span> terverifikasi
         </p>
-        <span class="h-3.5 w-px bg-white/15"></span>
         <a
-          href="/claim"
-          class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-white/55 transition hover:text-white/90"
+          href="/claim?tab=daftar"
+          class="group inline-flex items-center gap-2 rounded-full bg-brand-accent px-6 py-3 text-sm font-bold text-brand-dark shadow-[0_8px_30px_-8px_rgba(245,158,11,0.7)] transition hover:bg-amber-400 hover:shadow-[0_12px_36px_-8px_rgba(245,158,11,0.85)] hover:scale-[1.02]"
         >
           <span
-            class="flex h-3.5 w-3.5 items-center justify-center rounded bg-white/15 text-[9px] font-bold text-white/80"
-            >+</span
-          >
+            class="flex h-5 w-5 items-center justify-center rounded-full bg-brand-dark/15 text-xs font-bold transition group-hover:bg-brand-dark/20"
+            aria-hidden="true"
+          >+</span>
           Daftarkan media Anda
         </a>
       </div>
@@ -227,7 +226,7 @@ const latest = [...mediaOutlets]
         aria-hidden="true"
       >
         {
-          ["Online", "Cetak", "TV", "Radio", "Podcast"].map((t) => (
+          ["Website", "TV", "Radio", "Podcast", "YouTube", "Newspaper"].map((t) => (
             <span class="rounded-full border border-white/10 bg-white/8 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white/50 backdrop-blur-sm">
               {t}
             </span>

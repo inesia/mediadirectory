@@ -5,8 +5,10 @@ const isHome = pathname === "/";
 const links = [
   { href: "/", label: "Beranda" },
   { href: "/directory", label: "Direktori" },
-  { href: "/claim", label: "Klaim Media" },
+  { href: "/claim", label: "Daftar & Klaim" },
 ];
+
+const desktopLinks = links.filter((link) => link.href !== "/claim");
 
 function isActive(href: string) {
   if (href === "/") return pathname === "/";
@@ -39,18 +41,27 @@ function isActive(href: string) {
     </a>
 
     <div class="flex items-center gap-2 sm:gap-3">
-      <a
-        href="/directory"
-        id="header-nav-dir"
-        class:list={[
-          "hidden text-sm font-medium transition-colors duration-300 hover:opacity-80 sm:inline",
-          isHome
-            ? "text-white/80"
-            : "text-brand-dark/70 hover:text-brand-primary",
-        ]}
-      >
-        Direktori
-      </a>
+      <nav class="hidden items-center gap-1 md:flex" aria-label="Navigasi utama">
+        {
+          desktopLinks.map((link) => (
+            <a
+              href={link.href}
+              class:list={[
+                "header-nav-link rounded-lg px-3 py-2 text-sm font-medium transition-colors duration-300",
+                isActive(link.href)
+                  ? isHome
+                    ? "bg-white/15 text-white"
+                    : "bg-brand-primary/10 text-brand-primary"
+                  : isHome
+                    ? "text-white/80 hover:bg-white/10 hover:text-white"
+                    : "text-brand-dark/70 hover:text-brand-primary",
+              ]}
+            >
+              {link.label}
+            </a>
+          ))
+        }
+      </nav>
       <a
         href="/claim"
         id="header-nav-claim"
@@ -61,13 +72,13 @@ function isActive(href: string) {
             : "border border-brand-accent bg-transparent text-brand-dark hover:bg-brand-accent/10",
         ]}
       >
-        Klaim media Anda
+        Daftar / Klaim
       </a>
       <button
         type="button"
         id="nav-toggle"
         class:list={[
-          "inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-medium transition duration-300",
+          "inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-medium transition duration-300 md:hidden",
           isHome
             ? "border border-white/30 bg-white/10 text-white backdrop-blur-sm hover:bg-white/20"
             : "border border-brand-dark/12 bg-white text-brand-dark shadow-sm hover:border-brand-primary/30",
@@ -76,7 +87,6 @@ function isActive(href: string) {
         aria-controls="mobile-nav"
         aria-label="Buka menu"
       >
-        <span class="hidden sm:inline">Menu</span>
         <svg
           class="h-4 w-4"
           viewBox="0 0 24 24"
@@ -127,7 +137,7 @@ function isActive(href: string) {
 
   const container = header?.querySelector(".header-container");
   const logo = document.getElementById("header-logo");
-  const navDir = document.getElementById("header-nav-dir");
+  const navLinks = document.querySelectorAll<HTMLElement>(".header-nav-link");
   const navClaim = document.getElementById("header-nav-claim");
   const menuBtn = document.getElementById("nav-toggle");
 
@@ -165,8 +175,16 @@ function isActive(href: string) {
     logo?.classList.remove("text-white");
     logo?.classList.add("text-brand-primary");
 
-    navDir?.classList.remove("text-white/80");
-    navDir?.classList.add("text-brand-dark/70", "hover:text-brand-primary");
+    navLinks.forEach((link) => {
+      link.classList.remove(
+        "text-white/80",
+        "hover:bg-white/10",
+        "hover:text-white",
+        "bg-white/15",
+        "text-white",
+      );
+      link.classList.add("text-brand-dark/70", "hover:text-brand-primary");
+    });
 
     navClaim?.classList.remove(
       "border-white/40",
@@ -202,8 +220,10 @@ function isActive(href: string) {
     logo?.classList.remove("text-brand-primary");
     logo?.classList.add("text-white");
 
-    navDir?.classList.add("text-white/80");
-    navDir?.classList.remove("text-brand-dark/70", "hover:text-brand-primary");
+    navLinks.forEach((link) => {
+      link.classList.remove("text-brand-dark/70", "hover:text-brand-primary", "bg-brand-primary/10", "text-brand-primary");
+      link.classList.add("text-white/80", "hover:bg-white/10", "hover:text-white");
+    });
 
     navClaim?.classList.remove(
       "border-brand-accent",

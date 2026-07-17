@@ -1,6 +1,14 @@
 ---
 interface Props {
-  status: 'verified' | 'review' | 'suspended' | 'pending' | 'approved' | 'rejected';
+  status:
+    | 'verified'
+    | 'unverified'
+    | 'review'
+    | 'suspended'
+    | 'pending'
+    | 'approved'
+    | 'rejected'
+    | 'active';
   size?: 'sm' | 'md';
 }
 
@@ -8,20 +16,24 @@ const { status, size = 'sm' } = Astro.props;
 
 const labels: Record<Props['status'], string> = {
   verified: 'Terverifikasi',
+  unverified: 'Belum verifikasi',
   review: 'Ditinjau',
   suspended: 'Ditangguhkan',
   pending: 'Menunggu',
   approved: 'Disetujui',
   rejected: 'Ditolak',
+  active: 'Aktif',
 };
 
 const styles: Record<Props['status'], string> = {
   verified: 'bg-status-success/12 text-status-success ring-status-success/25',
+  unverified: 'bg-brand-dark/8 text-brand-dark/60 ring-brand-dark/15',
   review: 'bg-status-pending/12 text-amber-700 ring-status-pending/30',
   suspended: 'bg-status-danger/12 text-status-danger ring-status-danger/25',
   pending: 'bg-status-pending/12 text-amber-700 ring-status-pending/30',
   approved: 'bg-status-success/12 text-status-success ring-status-success/25',
   rejected: 'bg-status-danger/12 text-status-danger ring-status-danger/25',
+  active: 'bg-status-success/12 text-status-success ring-status-success/25',
 };
 
 const sizeClass = size === 'md' ? 'px-2.5 py-1 text-xs' : 'px-2 py-0.5 text-[11px]';
