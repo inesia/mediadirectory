@@ -153,6 +153,7 @@ function isActive(href: string) {
   const navLinks = document.querySelectorAll<HTMLElement>(".header-nav-link");
   const navClaim = document.getElementById("header-nav-claim");
   const menuBtn = document.getElementById("nav-toggle");
+  const authEl = document.getElementById("header-auth") as HTMLAnchorElement | null;
 
   function getThreshold() {
     return Math.max(window.innerHeight - 80, 60);
@@ -227,6 +228,9 @@ function isActive(href: string) {
       "shadow-sm",
       "hover:border-brand-primary/30",
     );
+
+    authEl?.classList.remove("text-white/80", "hover:text-white");
+    authEl?.classList.add("text-brand-dark/70", "hover:text-brand-primary");
   }
 
   function setHeroChrome() {
@@ -266,6 +270,9 @@ function isActive(href: string) {
       "backdrop-blur-sm",
       "hover:bg-white/20",
     );
+
+    authEl?.classList.remove("text-brand-dark/70", "hover:text-brand-primary");
+    authEl?.classList.add("text-white/80", "hover:text-white");
   }
 
   function syncHeader() {
@@ -295,31 +302,20 @@ function isActive(href: string) {
     syncHeader();
   }
 
-  // Mock auth chip
-  const authEl = document.getElementById("header-auth") as HTMLAnchorElement | null;
+  // Auth menu: Masuk → Profil setelah login
   const mobileNav = document.getElementById("mobile-nav")?.querySelector("nav");
   try {
     const auth = JSON.parse(localStorage.getItem("mdi_auth") || "null");
     if (auth?.email && authEl) {
-      authEl.textContent = "Keluar";
-      authEl.href = "#";
-      authEl.addEventListener("click", (e) => {
-        e.preventDefault();
-        localStorage.removeItem("mdi_auth");
-        window.location.reload();
-      });
+      authEl.textContent = "Profil";
+      authEl.href = "/profile";
       if (mobileNav && !mobileNav.querySelector("[data-auth-mobile]")) {
         const a = document.createElement("a");
-        a.href = "#";
+        a.href = "/profile";
         a.dataset.authMobile = "1";
         a.className =
           "rounded-lg px-3 py-2.5 text-sm font-medium text-brand-dark/80 hover:bg-brand-bg hover:text-brand-primary";
-        a.textContent = `Keluar (${auth.name || auth.email})`;
-        a.addEventListener("click", (e) => {
-          e.preventDefault();
-          localStorage.removeItem("mdi_auth");
-          window.location.reload();
-        });
+        a.textContent = "Profil";
         mobileNav.appendChild(a);
       }
     } else if (authEl) {
