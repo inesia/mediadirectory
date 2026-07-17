@@ -34,32 +34,6 @@ const userStatusLabels: Record<string, string> = {
   title="Daftar & Klaim Media"
   description="Daftarkan media baru atau ajukan klaim kepemilikan listing di Media Directory Indonesia."
 >
-  <!-- Auth gate (mock login) -->
-  <section id="auth-gate" class="mx-auto hidden max-w-lg px-4 py-16 sm:px-6 lg:px-8" hidden>
-    <div class="border border-brand-dark/8 bg-white p-6 sm:p-8">
-      <p class="text-xs font-semibold uppercase tracking-[0.18em] text-brand-accent">Masuk diperlukan</p>
-      <h1 class="mt-2 font-display text-2xl font-bold tracking-tight">Masuk untuk mengajukan</h1>
-      <p class="mt-2 text-sm text-brand-dark/65">
-        Sesuai alur klaim &amp; pendaftaran, Anda perlu masuk terlebih dahulu sebelum mengisi formulir.
-      </p>
-      <div class="mt-6 flex flex-col gap-3 sm:flex-row">
-        <a
-          id="auth-login-link"
-          href="/login"
-          class="inline-flex items-center justify-center rounded-lg bg-brand-primary px-5 py-3 text-sm font-semibold text-white hover:bg-brand-light"
-        >
-          Masuk
-        </a>
-        <a
-          href="/directory"
-          class="inline-flex items-center justify-center rounded-lg border border-brand-dark/12 px-5 py-3 text-sm font-semibold hover:border-brand-primary/30"
-        >
-          Kembali ke Direktori
-        </a>
-      </div>
-    </div>
-  </section>
-
   <div id="claim-app">
   <section class="border-b border-brand-dark/6 bg-white">
     <div class="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8 lg:py-12">
@@ -72,7 +46,6 @@ const userStatusLabels: Record<string, string> = {
       <p class="mt-2 max-w-2xl text-sm text-brand-dark/65 sm:text-base">
         Lengkapi formulir, unggah dokumen pendukung, lalu kirim atau simpan sebagai draft.
       </p>
-      <p id="claim-user-chip" class="mt-3 hidden text-sm text-brand-dark/55"></p>
     </div>
   </section>
 
@@ -394,41 +367,8 @@ const userStatusLabels: Record<string, string> = {
 
 <script>
   const SUBMISSIONS_KEY = 'mdi_submissions';
-  const AUTH_KEY = 'mdi_auth';
 
   type SubmissionStatus = 'draft' | 'pending' | 'approved' | 'rejected';
-
-  // ---- Auth gate ----
-  function getAuth() {
-    try {
-      return JSON.parse(localStorage.getItem(AUTH_KEY) || 'null');
-    } catch {
-      return null;
-    }
-  }
-
-  const auth = getAuth();
-  const gate = document.getElementById('auth-gate');
-  const app = document.getElementById('claim-app');
-  const userChip = document.getElementById('claim-user-chip');
-  const loginLink = document.getElementById('auth-login-link') as HTMLAnchorElement | null;
-
-  if (!auth?.email) {
-    gate?.classList.remove('hidden');
-    gate?.removeAttribute('hidden');
-    app?.classList.add('hidden');
-    if (loginLink) {
-      loginLink.href = `/login?next=${encodeURIComponent(window.location.pathname + window.location.search)}`;
-    }
-  } else {
-    gate?.classList.add('hidden');
-    gate?.setAttribute('hidden', '');
-    app?.classList.remove('hidden');
-    if (userChip) {
-      userChip.textContent = `Masuk sebagai ${auth.name || auth.email}`;
-      userChip.classList.remove('hidden');
-    }
-  }
 
   function activateTab(tab: string) {
     document.querySelectorAll<HTMLButtonElement>('.form-tab').forEach((b) => {
@@ -561,14 +501,8 @@ const userStatusLabels: Record<string, string> = {
     const option = [...(mediaSelect?.options || [])].find((o) => o.value === claimedMedia);
     const mediaName =
       option?.textContent?.replace(/\s*\(.*\)$/, '').trim() || claimedMedia;
-    const userName = orDefault(
-      val(data, 'userName'),
-      auth?.name || 'Pengguna Prototipe',
-    );
-    const userEmail = orDefault(
-      val(data, 'userEmail'),
-      auth?.email || 'prototype@example.com',
-    );
+    const userName = orDefault(val(data, 'userName'), 'Pengguna Prototipe');
+    const userEmail = orDefault(val(data, 'userEmail'), 'prototype@example.com');
     const now = new Date().toISOString();
     const status: SubmissionStatus = intent === 'draft' ? 'draft' : 'pending';
     const id = `klaim-${Date.now()}`;
