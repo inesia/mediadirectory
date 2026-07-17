@@ -1,0 +1,79 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const fieldClass =
+  'w-full rounded-lg border border-brand-dark/12 bg-white px-3 py-2.5 text-sm outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20';
+---
+
+<Layout title="Masuk" description="Masuk ke media directory untuk mengajukan klaim atau pendaftaran.">
+  <section class="mx-auto max-w-md px-4 py-14 sm:px-6 sm:py-20 lg:px-8">
+    <div class="border border-brand-dark/8 bg-white p-6 sm:p-8">
+      <p class="text-xs font-semibold uppercase tracking-[0.18em] text-brand-accent">Akun</p>
+      <h1 class="mt-2 font-display text-2xl font-bold tracking-tight sm:text-3xl">Masuk</h1>
+      <p class="mt-2 text-sm text-brand-dark/65">
+        Mock login untuk prototyping. Isi apa saja lalu lanjut — tanpa autentikasi sungguhan.
+      </p>
+
+      <form id="login-form" class="mt-8 space-y-4" novalidate>
+        <label class="block">
+          <span class="mb-1.5 block text-sm font-semibold">Nama</span>
+          <input type="text" name="name" placeholder="Nama Anda" class={fieldClass} />
+        </label>
+        <label class="block">
+          <span class="mb-1.5 block text-sm font-semibold">Email</span>
+          <input type="email" name="email" placeholder="anda@email.com" class={fieldClass} />
+        </label>
+        <label class="block">
+          <span class="mb-1.5 block text-sm font-semibold">Password</span>
+          <input type="password" name="password" placeholder="••••••••" class={fieldClass} />
+        </label>
+
+        <button
+          type="submit"
+          class="inline-flex w-full items-center justify-center rounded-lg bg-brand-primary px-5 py-3 text-sm font-semibold text-white transition hover:bg-brand-light"
+        >
+          Masuk
+        </button>
+      </form>
+
+      <p class="mt-4 text-center text-xs text-brand-dark/45">
+        Belum punya akun? Tombol di atas juga berfungsi sebagai daftar cepat (mock).
+      </p>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  const AUTH_KEY = 'mdi_auth';
+  const form = document.getElementById('login-form') as HTMLFormElement | null;
+  const next =
+    new URLSearchParams(window.location.search).get('next') || '/claim';
+
+  // Already logged in → bounce
+  try {
+    const existing = JSON.parse(localStorage.getItem(AUTH_KEY) || 'null');
+    if (existing?.email) {
+      window.location.replace(next);
+    }
+  } catch {
+    /* ignore */
+  }
+
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const data = new FormData(form);
+    const name = String(data.get('name') || '').trim() || 'Pengguna Prototipe';
+    const email = String(data.get('email') || '').trim() || 'prototype@example.com';
+
+    localStorage.setItem(
+      AUTH_KEY,
+      JSON.stringify({
+        name,
+        email,
+        loggedInAt: new Date().toISOString(),
+      }),
+    );
+
+    window.location.href = next;
+  });
+</script>

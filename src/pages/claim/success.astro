@@ -54,8 +54,14 @@ import Layout from '../../layouts/Layout.astro';
 
       <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
         <a
-          href="/directory"
+          href="/pengajuan"
           class="inline-flex items-center justify-center rounded-lg bg-brand-primary px-5 py-3 text-sm font-semibold text-white transition hover:bg-brand-light"
+        >
+          Lihat Pengajuan Saya
+        </a>
+        <a
+          href="/directory"
+          class="inline-flex items-center justify-center rounded-lg border border-brand-dark/12 px-5 py-3 text-sm font-semibold text-brand-dark transition hover:border-brand-primary/30"
         >
           Lihat Direktori
         </a>
@@ -108,9 +114,9 @@ import Layout from '../../layouts/Layout.astro';
     if (again) again.href = '/claim?tab=daftar';
     if (steps) {
       steps.innerHTML = `
-        <li class="flex gap-3"><span class="font-display font-bold text-brand-accent">1</span><span>Tim meninjau kelengkapan data media Anda.</span></li>
-        <li class="flex gap-3"><span class="font-display font-bold text-brand-accent">2</span><span>Jika lolos, listing muncul di direktori publik.</span></li>
-        <li class="flex gap-3"><span class="font-display font-bold text-brand-accent">3</span><span>Anda bisa mengajukan klaim kepemilikan setelah listing aktif.</span></li>
+        <li class="flex gap-3"><span class="font-display font-bold text-brand-accent">1</span><span>Pengajuan tersimpan dengan status Menunggu Verifikasi.</span></li>
+        <li class="flex gap-3"><span class="font-display font-bold text-brand-accent">2</span><span>Admin meninjau data dan dokumen pendukung.</span></li>
+        <li class="flex gap-3"><span class="font-display font-bold text-brand-accent">3</span><span>Anda mendapat notifikasi saat Disetujui atau Ditolak (lihat Pengajuan Saya).</span></li>
       `;
     }
   } else {
@@ -118,13 +124,13 @@ import Layout from '../../layouts/Layout.astro';
     if (title) title.textContent = 'Permintaan klaim diterima';
     if (desc)
       desc.textContent =
-        'Klaim kepemilikan media Anda sedang ditinjau. Kami akan menghubungi email verifikasi yang Anda cantumkan.';
+        'Klaim kepemilikan media Anda sedang ditinjau. Pantau status di halaman Pengajuan Saya.';
     if (again) again.href = '/claim?tab=klaim';
     if (steps) {
       steps.innerHTML = `
-        <li class="flex gap-3"><span class="font-display font-bold text-brand-accent">1</span><span>Cek email verifikasi untuk konfirmasi identitas.</span></li>
-        <li class="flex gap-3"><span class="font-display font-bold text-brand-accent">2</span><span>Tim meninjau hubungan Anda dengan media yang diklaim.</span></li>
-        <li class="flex gap-3"><span class="font-display font-bold text-brand-accent">3</span><span>Jika disetujui, akses pengelolaan listing akan dibuka.</span></li>
+        <li class="flex gap-3"><span class="font-display font-bold text-brand-accent">1</span><span>Pengajuan klaim berstatus Menunggu Verifikasi.</span></li>
+        <li class="flex gap-3"><span class="font-display font-bold text-brand-accent">2</span><span>Admin memverifikasi dokumen dan hubungan Anda dengan media.</span></li>
+        <li class="flex gap-3"><span class="font-display font-bold text-brand-accent">3</span><span>Jika disetujui, media terhubung ke akun; jika ditolak, alasan tampil di Pengajuan Saya.</span></li>
       `;
     }
   }

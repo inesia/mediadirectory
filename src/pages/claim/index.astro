@@ -34,6 +34,33 @@ const userStatusLabels: Record<string, string> = {
   title="Daftar & Klaim Media"
   description="Daftarkan media baru atau ajukan klaim kepemilikan listing di Media Directory Indonesia."
 >
+  <!-- Auth gate (mock login) -->
+  <section id="auth-gate" class="mx-auto hidden max-w-lg px-4 py-16 sm:px-6 lg:px-8" hidden>
+    <div class="border border-brand-dark/8 bg-white p-6 sm:p-8">
+      <p class="text-xs font-semibold uppercase tracking-[0.18em] text-brand-accent">Masuk diperlukan</p>
+      <h1 class="mt-2 font-display text-2xl font-bold tracking-tight">Masuk untuk mengajukan</h1>
+      <p class="mt-2 text-sm text-brand-dark/65">
+        Sesuai alur klaim &amp; pendaftaran, Anda perlu masuk terlebih dahulu sebelum mengisi formulir.
+      </p>
+      <div class="mt-6 flex flex-col gap-3 sm:flex-row">
+        <a
+          id="auth-login-link"
+          href="/login"
+          class="inline-flex items-center justify-center rounded-lg bg-brand-primary px-5 py-3 text-sm font-semibold text-white hover:bg-brand-light"
+        >
+          Masuk
+        </a>
+        <a
+          href="/directory"
+          class="inline-flex items-center justify-center rounded-lg border border-brand-dark/12 px-5 py-3 text-sm font-semibold hover:border-brand-primary/30"
+        >
+          Kembali ke Direktori
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <div id="claim-app">
   <section class="border-b border-brand-dark/6 bg-white">
     <div class="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8 lg:py-12">
       <p class="text-xs font-semibold uppercase tracking-[0.18em] text-brand-accent">
@@ -43,8 +70,9 @@ const userStatusLabels: Record<string, string> = {
         Daftarkan atau klaim media Anda
       </h1>
       <p class="mt-2 max-w-2xl text-sm text-brand-dark/65 sm:text-base">
-        Lengkapi data media dan profil pengguna. Kolom bertanda * wajib diisi.
+        Lengkapi formulir, unggah dokumen pendukung, lalu kirim atau simpan sebagai draft.
       </p>
+      <p id="claim-user-chip" class="mt-3 hidden text-sm text-brand-dark/55"></p>
     </div>
   </section>
 
@@ -210,16 +238,46 @@ const userStatusLabels: Record<string, string> = {
           </div>
         </fieldset>
 
+        <fieldset class="space-y-5">
+          <legend class="font-display text-lg font-bold text-brand-primary">Dokumen Pendukung</legend>
+          <label class="block">
+            <span class={labelClass} set:html={`Upload dokumen ${req}`} />
+            <input
+              type="file"
+              name="documents"
+              accept=".pdf,.jpg,.jpeg,.png,.webp"
+              multiple
+              class={fieldClass}
+            />
+            <span class="mt-1.5 block text-xs text-brand-dark/45">
+              Contoh: SIUP, KTP penanggung jawab, bukti kepemilikan domain. Bisa lebih dari satu file
+              (PDF/JPG/PNG).
+            </span>
+          </label>
+        </fieldset>
+
         <p class="text-xs text-brand-dark/45">
           Mode prototyping: validasi field sementara dinonaktifkan — submit boleh kosong.
         </p>
 
-        <button
-          type="submit"
-          class="inline-flex w-full items-center justify-center rounded-lg bg-brand-accent px-5 py-3 text-sm font-semibold text-brand-dark transition hover:bg-amber-400 sm:w-auto"
-        >
-          Kirim pendaftaran media
-        </button>
+        <div class="flex flex-col gap-3 sm:flex-row">
+          <button
+            type="submit"
+            name="intent"
+            value="submit"
+            class="inline-flex items-center justify-center rounded-lg bg-brand-accent px-5 py-3 text-sm font-semibold text-brand-dark transition hover:bg-amber-400"
+          >
+            Kirim pengajuan
+          </button>
+          <button
+            type="submit"
+            name="intent"
+            value="draft"
+            class="inline-flex items-center justify-center rounded-lg border border-brand-dark/12 px-5 py-3 text-sm font-semibold text-brand-dark transition hover:border-brand-primary/30"
+          >
+            Simpan Draft
+          </button>
+        </div>
       </form>
     </div>
 
@@ -289,24 +347,88 @@ const userStatusLabels: Record<string, string> = {
           </div>
         </fieldset>
 
+        <fieldset class="space-y-5">
+          <legend class="font-display text-lg font-bold text-brand-primary">Dokumen Pendukung</legend>
+          <label class="block">
+            <span class={labelClass} set:html={`Upload dokumen ${req}`} />
+            <input
+              type="file"
+              name="documents"
+              accept=".pdf,.jpg,.jpeg,.png,.webp"
+              multiple
+              class={fieldClass}
+            />
+            <span class="mt-1.5 block text-xs text-brand-dark/45">
+              Contoh: SIUP, KTP, surat kuasa, bukti domain. Bisa lebih dari satu file (PDF/JPG/PNG).
+            </span>
+          </label>
+        </fieldset>
+
         <p class="text-xs text-brand-dark/45">
           Mode prototyping: validasi field sementara dinonaktifkan — submit boleh kosong.
         </p>
 
-        <button
-          type="submit"
-          class="inline-flex w-full items-center justify-center rounded-lg bg-brand-accent px-5 py-3 text-sm font-semibold text-brand-dark transition hover:bg-amber-400 sm:w-auto"
-        >
-          Kirim permintaan klaim
-        </button>
+        <div class="flex flex-col gap-3 sm:flex-row">
+          <button
+            type="submit"
+            name="intent"
+            value="submit"
+            class="inline-flex items-center justify-center rounded-lg bg-brand-accent px-5 py-3 text-sm font-semibold text-brand-dark transition hover:bg-amber-400"
+          >
+            Kirim pengajuan
+          </button>
+          <button
+            type="submit"
+            name="intent"
+            value="draft"
+            class="inline-flex items-center justify-center rounded-lg border border-brand-dark/12 px-5 py-3 text-sm font-semibold text-brand-dark transition hover:border-brand-primary/30"
+          >
+            Simpan Draft
+          </button>
+        </div>
       </form>
     </div>
   </section>
+  </div>
 </Layout>
 
 <script>
-  const MEDIA_KEY = 'mdi_media_registrations';
-  const CLAIM_KEY = 'mdi_claims';
+  const SUBMISSIONS_KEY = 'mdi_submissions';
+  const AUTH_KEY = 'mdi_auth';
+
+  type SubmissionStatus = 'draft' | 'pending' | 'approved' | 'rejected';
+
+  // ---- Auth gate ----
+  function getAuth() {
+    try {
+      return JSON.parse(localStorage.getItem(AUTH_KEY) || 'null');
+    } catch {
+      return null;
+    }
+  }
+
+  const auth = getAuth();
+  const gate = document.getElementById('auth-gate');
+  const app = document.getElementById('claim-app');
+  const userChip = document.getElementById('claim-user-chip');
+  const loginLink = document.getElementById('auth-login-link') as HTMLAnchorElement | null;
+
+  if (!auth?.email) {
+    gate?.classList.remove('hidden');
+    gate?.removeAttribute('hidden');
+    app?.classList.add('hidden');
+    if (loginLink) {
+      loginLink.href = `/login?next=${encodeURIComponent(window.location.pathname + window.location.search)}`;
+    }
+  } else {
+    gate?.classList.add('hidden');
+    gate?.setAttribute('hidden', '');
+    app?.classList.remove('hidden');
+    if (userChip) {
+      userChip.textContent = `Masuk sebagai ${auth.name || auth.email}`;
+      userChip.classList.remove('hidden');
+    }
+  }
 
   function activateTab(tab: string) {
     document.querySelectorAll<HTMLButtonElement>('.form-tab').forEach((b) => {
@@ -342,93 +464,96 @@ const userStatusLabels: Record<string, string> = {
   function val(data: FormData, key: string) {
     return String(data.get(key) || '').trim();
   }
-
   function orDefault(value: string, fallback: string) {
     return value || fallback;
   }
-
-  function goToSuccess(payload: {
-    type: 'daftar' | 'klaim';
-    id: string;
-    title: string;
-    rows: { label: string; value: string }[];
-    submittedAt: string;
-  }) {
+  function fileNames(data: FormData, key: string) {
+    return data
+      .getAll(key)
+      .filter((f) => f instanceof File && f.size > 0)
+      .map((f) => (f as File).name);
+  }
+  function readSubmissions() {
+    try {
+      return JSON.parse(localStorage.getItem(SUBMISSIONS_KEY) || '[]');
+    } catch {
+      return [];
+    }
+  }
+  function writeSubmission(record: Record<string, unknown>) {
+    const list = readSubmissions();
+    list.unshift(record);
+    localStorage.setItem(SUBMISSIONS_KEY, JSON.stringify(list));
+  }
+  function submitIntent(e: SubmitEvent) {
+    const btn = e.submitter as HTMLButtonElement | null;
+    return btn?.value === 'draft' ? 'draft' : 'submit';
+  }
+  function goNext(status: SubmissionStatus, payload: Record<string, unknown>) {
     sessionStorage.setItem('mdi_last_submission', JSON.stringify(payload));
-    window.location.href = `/claim/success?type=${payload.type}`;
+    if (status === 'draft') {
+      window.location.href = '/pengajuan?status=draft';
+    } else {
+      window.location.href = `/claim/success?type=${payload.type}`;
+    }
   }
 
-  // ---- Daftar Media (validation bypassed for prototyping) ----
+  // ---- Daftar ----
   const daftarForm = document.getElementById('daftar-form') as HTMLFormElement | null;
-
   daftarForm?.addEventListener('submit', (e) => {
     e.preventDefault();
+    const intent = submitIntent(e);
     const data = new FormData(daftarForm);
-    const logoFile = data.get('logo') as File | null;
-    const imageFiles = data
-      .getAll('images')
-      .filter((f) => f instanceof File && f.size > 0) as File[];
+    const docs = fileNames(data, 'documents');
+    const name = orDefault(val(data, 'name'), 'Media Tanpa Nama');
+    const now = new Date().toISOString();
+    const status: SubmissionStatus = intent === 'draft' ? 'draft' : 'pending';
+    const id = `daftar-${Date.now()}`;
 
-    const record = {
-      id: `media-${Date.now()}`,
-      name: orDefault(val(data, 'name'), 'Media Tanpa Nama'),
-      domain: orDefault(val(data, 'domain'), 'https://example.com'),
-      logo: logoFile?.name || '',
-      images: imageFiles.map((f) => f.name),
-      description: orDefault(val(data, 'description'), 'Deskripsi belum diisi (prototyping).'),
-      status: orDefault(val(data, 'status'), 'unverified'),
-      companyName: val(data, 'companyName'),
-      founded: val(data, 'founded'),
-      address: {
-        street: orDefault(val(data, 'street'), '—'),
-        district: orDefault(val(data, 'district'), '—'),
-        city: orDefault(val(data, 'city'), '—'),
-        province: orDefault(val(data, 'province'), '—'),
-      },
-      contact: {
-        phone: orDefault(val(data, 'phone'), '—'),
-        email: orDefault(val(data, 'email'), '—'),
-      },
-      social: {
-        facebook: val(data, 'facebook'),
-        instagram: val(data, 'instagram'),
-        tiktok: val(data, 'tiktok'),
-        youtube: val(data, 'youtube'),
-        x: val(data, 'x'),
-        threads: val(data, 'threads'),
-        linkedin: val(data, 'linkedin'),
-        telegram: val(data, 'telegram'),
-      },
-      type: orDefault(val(data, 'type'), 'Website'),
-      submittedAt: new Date().toISOString(),
-    };
-
-    const existing = JSON.parse(localStorage.getItem(MEDIA_KEY) || '[]');
-    existing.unshift(record);
-    localStorage.setItem(MEDIA_KEY, JSON.stringify(existing));
-
-    goToSuccess({
+    writeSubmission({
+      id,
       type: 'daftar',
-      id: record.id,
-      title: record.name,
-      submittedAt: record.submittedAt,
+      status,
+      title: name,
+      documents: docs,
+      summary:
+        status === 'draft'
+          ? 'Pendaftaran media baru — draft'
+          : 'Pendaftaran media baru — menunggu verifikasi',
+      submittedAt: now,
+      updatedAt: now,
+      payload: {
+        name,
+        domain: orDefault(val(data, 'domain'), 'https://example.com'),
+        type: orDefault(val(data, 'type'), 'Website'),
+        mediaStatus: orDefault(val(data, 'status'), 'unverified'),
+      },
+    });
+
+    goNext(status, {
+      type: 'daftar',
+      id,
+      title: name,
+      submittedAt: now,
       rows: [
-        { label: 'Nama Media', value: record.name },
-        { label: 'Domain', value: record.domain },
-        { label: 'Jenis', value: record.type },
-        { label: 'Status', value: record.status },
-        { label: 'Kota', value: record.address.city },
+        { label: 'Nama Media', value: name },
+        { label: 'Domain', value: orDefault(val(data, 'domain'), 'https://example.com') },
+        { label: 'Dokumen', value: docs.length ? docs.join(', ') : '—' },
+        {
+          label: 'Status pengajuan',
+          value: status === 'draft' ? 'Draft' : 'Menunggu Verifikasi',
+        },
       ],
     });
   });
 
-  // ---- Klaim Media (validation bypassed for prototyping) ----
+  // ---- Klaim ----
   const klaimForm = document.getElementById('klaim-form') as HTMLFormElement | null;
-
   klaimForm?.addEventListener('submit', (e) => {
     e.preventDefault();
+    const intent = submitIntent(e);
     const data = new FormData(klaimForm);
-
+    const docs = fileNames(data, 'documents');
     const claimedMedia = orDefault(
       val(data, 'claimedMedia'),
       mediaSelect?.options[1]?.value || 'kompas',
@@ -436,43 +561,52 @@ const userStatusLabels: Record<string, string> = {
     const option = [...(mediaSelect?.options || [])].find((o) => o.value === claimedMedia);
     const mediaName =
       option?.textContent?.replace(/\s*\(.*\)$/, '').trim() || claimedMedia;
+    const userName = orDefault(
+      val(data, 'userName'),
+      auth?.name || 'Pengguna Prototipe',
+    );
+    const userEmail = orDefault(
+      val(data, 'userEmail'),
+      auth?.email || 'prototype@example.com',
+    );
+    const now = new Date().toISOString();
+    const status: SubmissionStatus = intent === 'draft' ? 'draft' : 'pending';
+    const id = `klaim-${Date.now()}`;
 
-    const record = {
-      id: `claim-${Date.now()}`,
-      mediaName,
-      mediaSlug: claimedMedia,
-      user: {
-        name: orDefault(val(data, 'userName'), 'Pengguna Prototipe'),
-        email: orDefault(val(data, 'userEmail'), 'prototype@example.com'),
-        phone: orDefault(val(data, 'userPhone'), '—'),
-        bio: val(data, 'bio'),
-        verificationEmail: orDefault(
-          val(data, 'verificationEmail'),
-          orDefault(val(data, 'userEmail'), 'prototype@example.com'),
-        ),
-        status: orDefault(val(data, 'userStatus'), 'pending'),
-        role: orDefault(val(data, 'userRole'), 'Owner'),
-        claimedMediaSlug: claimedMedia,
-      },
-      status: 'pending',
-      submittedAt: new Date().toISOString(),
-    };
-
-    const existing = JSON.parse(localStorage.getItem(CLAIM_KEY) || '[]');
-    existing.unshift(record);
-    localStorage.setItem(CLAIM_KEY, JSON.stringify(existing));
-
-    goToSuccess({
+    writeSubmission({
+      id,
       type: 'klaim',
-      id: record.id,
-      title: record.mediaName,
-      submittedAt: record.submittedAt,
+      status,
+      title: mediaName,
+      documents: docs,
+      summary:
+        status === 'draft'
+          ? 'Klaim kepemilikan — draft'
+          : 'Klaim kepemilikan — menunggu verifikasi',
+      submittedAt: now,
+      updatedAt: now,
+      payload: {
+        mediaSlug: claimedMedia,
+        userName,
+        userEmail,
+        role: orDefault(val(data, 'userRole'), 'Owner'),
+      },
+    });
+
+    goNext(status, {
+      type: 'klaim',
+      id,
+      title: mediaName,
+      submittedAt: now,
       rows: [
-        { label: 'Media diklaim', value: record.mediaName },
-        { label: 'Nama', value: record.user.name },
-        { label: 'Email', value: record.user.email },
-        { label: 'Role', value: record.user.role },
-        { label: 'Status klaim', value: 'Menunggu tinjauan' },
+        { label: 'Media diklaim', value: mediaName },
+        { label: 'Nama', value: userName },
+        { label: 'Email', value: userEmail },
+        { label: 'Dokumen', value: docs.length ? docs.join(', ') : '—' },
+        {
+          label: 'Status pengajuan',
+          value: status === 'draft' ? 'Draft' : 'Menunggu Verifikasi',
+        },
       ],
     });
   });

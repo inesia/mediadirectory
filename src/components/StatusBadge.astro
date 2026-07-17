@@ -8,7 +8,8 @@ interface Props {
     | 'pending'
     | 'approved'
     | 'rejected'
-    | 'active';
+    | 'active'
+    | 'draft';
   size?: 'sm' | 'md';
 }
 
@@ -19,10 +20,11 @@ const labels: Record<Props['status'], string> = {
   unverified: 'Belum verifikasi',
   review: 'Ditinjau',
   suspended: 'Ditangguhkan',
-  pending: 'Menunggu',
+  pending: 'Menunggu Verifikasi',
   approved: 'Disetujui',
   rejected: 'Ditolak',
   active: 'Aktif',
+  draft: 'Draft',
 };
 
 const styles: Record<Props['status'], string> = {
@@ -34,6 +36,7 @@ const styles: Record<Props['status'], string> = {
   approved: 'bg-status-success/12 text-status-success ring-status-success/25',
   rejected: 'bg-status-danger/12 text-status-danger ring-status-danger/25',
   active: 'bg-status-success/12 text-status-success ring-status-success/25',
+  draft: 'bg-brand-dark/8 text-brand-dark/55 ring-brand-dark/15',
 };
 
 const sizeClass = size === 'md' ? 'px-2.5 py-1 text-xs' : 'px-2 py-0.5 text-[11px]';

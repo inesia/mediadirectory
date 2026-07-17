@@ -1,0 +1,273 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import StatusBadge from '../../components/StatusBadge.astro';
+import { seedSubmissions } from '../../lib/submissions';
+import type { SubmissionStatus } from '../../lib/submissions';
+
+const filters: Array<{ value: string; label: string }> = [
+  { value: 'all', label: 'Semua' },
+  { value: 'draft', label: 'Draft' },
+  { value: 'pending', label: 'Menunggu' },
+  { value: 'approved', label: 'Disetujui' },
+  { value: 'rejected', label: 'Ditolak' },
+];
+---
+
+<Layout
+  title="Pengajuan Saya"
+  description="Lacak status klaim dan pendaftaran media Anda."
+>
+  <section class="border-b border-brand-dark/6 bg-white">
+    <div class="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8 lg:py-12">
+      <p class="text-xs font-semibold uppercase tracking-[0.18em] text-brand-primary">
+        Akun
+      </p>
+      <h1 class="mt-2 font-display text-3xl font-bold tracking-tight sm:text-4xl">
+        Pengajuan saya
+      </h1>
+      <p class="mt-2 max-w-2xl text-sm text-brand-dark/65 sm:text-base">
+        Pantau status Draft, Menunggu Verifikasi, Disetujui, atau Ditolak. Data seed + pengajuan
+        lokal digabung di sini.
+      </p>
+      <div class="mt-5 flex flex-wrap gap-3">
+        <a
+          href="/claim?tab=daftar"
+          class="inline-flex rounded-lg bg-brand-accent px-4 py-2.5 text-sm font-semibold text-brand-dark hover:bg-amber-400"
+        >
+          Daftarkan Media
+        </a>
+        <a
+          href="/claim?tab=klaim"
+          class="inline-flex rounded-lg border border-brand-dark/12 px-4 py-2.5 text-sm font-semibold hover:border-brand-primary/30"
+        >
+          Klaim Media
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+    <!-- Filters -->
+    <div class="flex flex-wrap gap-2" id="status-filters" role="tablist" aria-label="Filter status">
+      {
+        filters.map((f, i) => (
+          <button
+            type="button"
+            data-filter={f.value}
+            class:list={[
+              'status-filter rounded-full px-3 py-1.5 text-xs font-semibold ring-1 ring-inset transition',
+              i === 0
+                ? 'bg-brand-primary text-white ring-brand-primary'
+                : 'bg-white text-brand-dark/65 ring-brand-dark/12 hover:ring-brand-primary/40',
+            ]}
+          >
+            {f.label}
+          </button>
+        ))
+      }
+    </div>
+
+    <p class="mt-4 text-sm text-brand-dark/55">
+      Menampilkan <span id="pengajuan-count" class="font-semibold text-brand-dark">0</span> pengajuan
+    </p>
+
+    <!-- Seed cards (static) + local cards injected by JS -->
+    <div id="pengajuan-list" class="mt-6 space-y-4">
+      {
+        seedSubmissions.map((item) => (
+          <article
+            class="pengajuan-card border border-brand-dark/8 bg-white p-5"
+            data-status={item.status}
+            data-id={item.id}
+            data-type={item.type}
+          >
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div>
+                <div class="flex flex-wrap items-center gap-2">
+                  <h2 class="font-display text-lg font-bold">{item.title}</h2>
+                  <StatusBadge status={item.status as SubmissionStatus} />
+                </div>
+                <p class="mt-1 text-xs font-medium uppercase tracking-wide text-brand-dark/45">
+                  {item.type === 'klaim' ? 'Klaim Media' : 'Daftar Media Baru'}
+                </p>
+                <p class="mt-2 text-sm text-brand-dark/65">{item.summary}</p>
+              </div>
+              <p class="shrink-0 text-xs text-brand-dark/45">
+                {new Date(item.updatedAt).toLocaleDateString('id-ID', {
+                  day: 'numeric',
+                  month: 'short',
+                  year: 'numeric',
+                })}
+              </p>
+            </div>
+
+            {
+              item.documents.length > 0 && (
+                <p class="mt-3 text-xs text-brand-dark/50">
+                  Dokumen: {item.documents.join(', ')}
+                </p>
+              )
+            }
+
+            {
+              item.status === 'rejected' && item.rejectionReason && (
+                <div class="mt-4 rounded-lg border border-status-danger/20 bg-status-danger/8 p-3 text-sm text-status-danger">
+                  <p class="font-semibold">Alasan penolakan</p>
+                  <p class="mt-1 text-status-danger/90">{item.rejectionReason}</p>
+                </div>
+              )
+            }
+
+            {
+              item.status === 'draft' && (
+                <div class="mt-4">
+                  <a
+                    href={`/claim?tab=${item.type === 'klaim' ? 'klaim' : 'daftar'}`}
+                    class="text-sm font-semibold text-brand-primary hover:text-brand-light"
+                  >
+                    Lanjutkan pengisian →
+                  </a>
+                </div>
+              )
+            }
+          </article>
+        ))
+      }
+    </div>
+
+    <p id="pengajuan-empty" class="mt-12 hidden text-center text-sm text-brand-dark/55" hidden>
+      Tidak ada pengajuan untuk filter ini.
+    </p>
+  </section>
+</Layout>
+
+<script>
+  import { seedSubmissions } from '../../lib/submissions';
+
+  const SUBMISSIONS_KEY = 'mdi_submissions';
+  const list = document.getElementById('pengajuan-list');
+  const countEl = document.getElementById('pengajuan-count');
+  const empty = document.getElementById('pengajuan-empty');
+
+  const badgeHtml: Record<string, string> = {
+    draft:
+      '<span class="inline-flex items-center gap-1 rounded-full bg-brand-dark/8 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-brand-dark/55 ring-1 ring-inset ring-brand-dark/15"><span class="h-1.5 w-1.5 rounded-full bg-current opacity-80"></span>Draft</span>',
+    pending:
+      '<span class="inline-flex items-center gap-1 rounded-full bg-status-pending/12 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-amber-700 ring-1 ring-inset ring-status-pending/30"><span class="h-1.5 w-1.5 rounded-full bg-current opacity-80"></span>Menunggu Verifikasi</span>',
+    approved:
+      '<span class="inline-flex items-center gap-1 rounded-full bg-status-success/12 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-status-success ring-1 ring-inset ring-status-success/25"><span class="h-1.5 w-1.5 rounded-full bg-current opacity-80"></span>Disetujui</span>',
+    rejected:
+      '<span class="inline-flex items-center gap-1 rounded-full bg-status-danger/12 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-status-danger ring-1 ring-inset ring-status-danger/25"><span class="h-1.5 w-1.5 rounded-full bg-current opacity-80"></span>Ditolak</span>',
+  };
+
+  function formatDate(iso: string) {
+    return new Date(iso).toLocaleDateString('id-ID', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    });
+  }
+
+  function readLocal() {
+    try {
+      return JSON.parse(localStorage.getItem(SUBMISSIONS_KEY) || '[]');
+    } catch {
+      return [];
+    }
+  }
+
+  function injectLocal() {
+    if (!list) return;
+    const locals = readLocal();
+    locals.forEach((item: {
+      id: string;
+      type: string;
+      status: string;
+      title: string;
+      documents?: string[];
+      rejectionReason?: string;
+      summary?: string;
+      updatedAt: string;
+    }) => {
+      if (document.querySelector(`[data-id="${item.id}"]`)) return;
+      const card = document.createElement('article');
+      card.className = 'pengajuan-card border border-brand-dark/8 bg-white p-5';
+      card.dataset.status = item.status;
+      card.dataset.id = item.id;
+      card.dataset.type = item.type;
+      const docs = item.documents?.length
+        ? `<p class="mt-3 text-xs text-brand-dark/50">Dokumen: ${item.documents.join(', ')}</p>`
+        : '';
+      const reject =
+        item.status === 'rejected' && item.rejectionReason
+          ? `<div class="mt-4 rounded-lg border border-status-danger/20 bg-status-danger/8 p-3 text-sm text-status-danger"><p class="font-semibold">Alasan penolakan</p><p class="mt-1">${item.rejectionReason}</p></div>`
+          : '';
+      const draftLink =
+        item.status === 'draft'
+          ? `<div class="mt-4"><a href="/claim?tab=${item.type === 'klaim' ? 'klaim' : 'daftar'}" class="text-sm font-semibold text-brand-primary hover:text-brand-light">Lanjutkan pengisian →</a></div>`
+          : '';
+      card.innerHTML = `
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <div class="flex flex-wrap items-center gap-2">
+              <h2 class="font-display text-lg font-bold">${item.title}</h2>
+              ${badgeHtml[item.status] || badgeHtml.pending}
+            </div>
+            <p class="mt-1 text-xs font-medium uppercase tracking-wide text-brand-dark/45">
+              ${item.type === 'klaim' ? 'Klaim Media' : 'Daftar Media Baru'}
+            </p>
+            <p class="mt-2 text-sm text-brand-dark/65">${item.summary || ''}</p>
+          </div>
+          <p class="shrink-0 text-xs text-brand-dark/45">${formatDate(item.updatedAt)}</p>
+        </div>
+        ${docs}${reject}${draftLink}
+      `;
+      list.prepend(card);
+    });
+  }
+
+  let activeFilter = new URLSearchParams(window.location.search).get('status') || 'all';
+  if (!['all', 'draft', 'pending', 'approved', 'rejected'].includes(activeFilter)) {
+    activeFilter = 'all';
+  }
+
+  function applyFilter() {
+    const cards = document.querySelectorAll<HTMLElement>('.pengajuan-card');
+    let visible = 0;
+    cards.forEach((card) => {
+      const show = activeFilter === 'all' || card.dataset.status === activeFilter;
+      card.classList.toggle('hidden', !show);
+      if (show) visible += 1;
+    });
+    if (countEl) countEl.textContent = String(visible);
+    const isEmpty = visible === 0;
+    empty?.classList.toggle('hidden', !isEmpty);
+    empty?.toggleAttribute('hidden', !isEmpty);
+
+    document.querySelectorAll<HTMLButtonElement>('.status-filter').forEach((btn) => {
+      const on = btn.dataset.filter === activeFilter;
+      btn.classList.toggle('bg-brand-primary', on);
+      btn.classList.toggle('text-white', on);
+      btn.classList.toggle('ring-brand-primary', on);
+      btn.classList.toggle('bg-white', !on);
+      btn.classList.toggle('text-brand-dark/65', !on);
+      btn.classList.toggle('ring-brand-dark/12', !on);
+    });
+  }
+
+  document.querySelectorAll<HTMLButtonElement>('.status-filter').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      activeFilter = btn.dataset.filter || 'all';
+      const url = new URL(window.location.href);
+      if (activeFilter === 'all') url.searchParams.delete('status');
+      else url.searchParams.set('status', activeFilter);
+      history.replaceState(null, '', url.toString());
+      applyFilter();
+    });
+  });
+
+  injectLocal();
+  // ensure seed count baseline known
+  void seedSubmissions;
+  applyFilter();
+</script>
