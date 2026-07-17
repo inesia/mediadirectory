@@ -37,11 +37,7 @@ const { media } = Astro.props;
     {media.type} · {media.address.city}, {media.address.province}
   </p>
 
-  <p class="mt-3 flex-1 text-sm leading-relaxed text-brand-dark/70 line-clamp-3">
-    {media.description}
-  </p>
-
-  <div class="mt-4 flex flex-wrap gap-1.5">
+  <div class="mt-4 flex flex-1 flex-wrap content-start gap-1.5">
     {
       (media.categories || []).slice(0, 3).map((cat) => (
         <span class="rounded-md bg-brand-bg px-2 py-0.5 text-[11px] font-medium text-brand-dark/60">
@@ -51,10 +47,7 @@ const { media } = Astro.props;
     }
   </div>
 
-  <div
-    class="mt-5 flex items-center justify-between border-t border-brand-dark/6 pt-4 text-xs text-brand-dark/50"
-  >
-    <span>{media.reach || media.domain.replace(/^https?:\/\//, '')}</span>
+  <div class="mt-5 border-t border-brand-dark/6 pt-4 text-right text-xs">
     <a
       href={`/directory/${media.slug}`}
       class="font-semibold text-brand-primary transition group-hover:text-brand-light"
