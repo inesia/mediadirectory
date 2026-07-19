@@ -5,13 +5,45 @@ const fieldClass =
   'w-full rounded-lg border border-brand-dark/12 bg-white px-3 py-2.5 text-sm outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20';
 ---
 
-<Layout title="Masuk" description="Masuk ke media directory untuk mengajukan klaim atau pendaftaran.">
+<Layout title="Masuk / Buat akun" description="Masuk atau buat akun media directory.">
   <section class="mx-auto max-w-md px-4 py-14 sm:px-6 sm:py-20 lg:px-8">
     <div class="border border-brand-dark/8 bg-white p-6 sm:p-8">
       <p class="text-xs font-semibold uppercase tracking-[0.18em] text-brand-accent">Akun</p>
-      <h1 class="mt-2 font-display text-2xl font-bold tracking-tight sm:text-3xl">Masuk</h1>
+      <h1 id="auth-title" class="mt-2 font-display text-2xl font-bold tracking-tight sm:text-3xl">
+        Masuk
+      </h1>
+      <p id="auth-desc" class="mt-2 text-sm text-brand-dark/65">
+        Masuk ke akun Anda untuk mengelola pengajuan.
+      </p>
 
-      <form id="login-form" class="mt-8 space-y-4" novalidate>
+      <div
+        class="mt-6 flex gap-1 rounded-lg border border-brand-dark/10 bg-brand-bg p-1"
+        role="tablist"
+        aria-label="Mode autentikasi"
+      >
+        <button
+          type="button"
+          id="tab-masuk"
+          role="tab"
+          aria-selected="true"
+          data-mode="masuk"
+          class="auth-tab flex-1 rounded-md bg-white px-3 py-2 text-sm font-semibold text-brand-primary shadow-sm"
+        >
+          Masuk
+        </button>
+        <button
+          type="button"
+          id="tab-daftar"
+          role="tab"
+          aria-selected="false"
+          data-mode="buat"
+          class="auth-tab flex-1 rounded-md px-3 py-2 text-sm font-semibold text-brand-dark/55 transition hover:text-brand-dark"
+        >
+          Buat akun
+        </button>
+      </div>
+
+      <form id="auth-form" class="mt-6 space-y-4" novalidate>
         <label class="block">
           <span class="mb-1.5 block text-sm font-semibold">Nama</span>
           <input type="text" name="name" placeholder="Nama Anda" class={fieldClass} />
@@ -24,29 +56,83 @@ const fieldClass =
           <span class="mb-1.5 block text-sm font-semibold">Password</span>
           <input type="password" name="password" placeholder="••••••••" class={fieldClass} />
         </label>
+        <label id="confirm-wrap" class="hidden block" hidden>
+          <span class="mb-1.5 block text-sm font-semibold">Konfirmasi password</span>
+          <input
+            type="password"
+            name="confirm"
+            placeholder="••••••••"
+            class={fieldClass}
+          />
+        </label>
 
         <button
           type="submit"
+          id="auth-submit"
           class="inline-flex w-full items-center justify-center rounded-lg bg-brand-primary px-5 py-3 text-sm font-semibold text-white transition hover:bg-brand-light"
         >
           Masuk
         </button>
       </form>
-
-      <p class="mt-4 text-center text-xs text-brand-dark/45">
-        Belum punya akun? Tombol di atas juga berfungsi sebagai daftar cepat (mock).
-      </p>
     </div>
   </section>
 </Layout>
 
 <script>
   const AUTH_KEY = 'mdi_auth';
-  const form = document.getElementById('login-form') as HTMLFormElement | null;
+  const form = document.getElementById('auth-form') as HTMLFormElement | null;
+  const titleEl = document.getElementById('auth-title');
+  const descEl = document.getElementById('auth-desc');
+  const submitBtn = document.getElementById('auth-submit');
+  const confirmWrap = document.getElementById('confirm-wrap');
+  const tabs = document.querySelectorAll<HTMLButtonElement>('.auth-tab');
   const next =
-    new URLSearchParams(window.location.search).get('next') || '/claim';
+    new URLSearchParams(window.location.search).get('next') || '/profile';
 
-  // Already logged in → bounce
+  let mode: 'masuk' | 'buat' = new URLSearchParams(window.location.search).get('mode') === 'buat'
+    ? 'buat'
+    : 'masuk';
+
+  function setMode(nextMode: 'masuk' | 'buat') {
+    mode = nextMode;
+    const isBuat = mode === 'buat';
+
+    tabs.forEach((tab) => {
+      const on = tab.dataset.mode === mode;
+      tab.setAttribute('aria-selected', String(on));
+      tab.classList.toggle('bg-white', on);
+      tab.classList.toggle('text-brand-primary', on);
+      tab.classList.toggle('shadow-sm', on);
+      tab.classList.toggle('text-brand-dark/55', !on);
+    });
+
+    if (titleEl) titleEl.textContent = isBuat ? 'Buat akun' : 'Masuk';
+    if (descEl) {
+      descEl.textContent = isBuat
+        ? 'Buat akun baru untuk mengajukan daftar media atau klaim.'
+        : 'Masuk ke akun Anda untuk mengelola pengajuan.';
+    }
+    if (submitBtn) submitBtn.textContent = isBuat ? 'Buat akun' : 'Masuk';
+
+    if (confirmWrap) {
+      confirmWrap.classList.toggle('hidden', !isBuat);
+      confirmWrap.toggleAttribute('hidden', !isBuat);
+    }
+
+    const url = new URL(window.location.href);
+    if (isBuat) url.searchParams.set('mode', 'buat');
+    else url.searchParams.delete('mode');
+    window.history.replaceState({}, '', url);
+  }
+
+  tabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      setMode(tab.dataset.mode === 'buat' ? 'buat' : 'masuk');
+    });
+  });
+
+  setMode(mode);
+
   try {
     const existing = JSON.parse(localStorage.getItem(AUTH_KEY) || 'null');
     if (existing?.email) {
@@ -68,6 +154,7 @@ const fieldClass =
         name,
         email,
         loggedInAt: new Date().toISOString(),
+        createdVia: mode,
       }),
     );
 

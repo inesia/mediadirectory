@@ -7,11 +7,36 @@ interface Props {
 }
 
 const { media } = Astro.props;
+
+/** Soft status tint — subtle marker so cards are easier to scan */
+const statusSurface: Record<MediaOutlet['status'], string> = {
+  verified: 'bg-white border-brand-dark/8',
+  unverified: 'bg-zinc-100/90 border-brand-dark/10',
+  review: 'bg-amber-50/90 border-amber-200/60',
+  suspended: 'bg-rose-50/90 border-rose-200/50',
+};
+
+/** Display hostname only, e.g. https://www.kompas.com → kompas.com */
+function displayDomain(domain: string) {
+  try {
+    const host = new URL(domain.startsWith('http') ? domain : `https://${domain}`).hostname;
+    return host.replace(/^www\./, '');
+  } catch {
+    return domain.replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
+  }
+}
+
+const domainLabel = displayDomain(media.domain);
+const avatarLabel = domainLabel.slice(0, 2).toUpperCase();
 ---
 
 <article
-  class="media-card group flex h-full flex-col border border-brand-dark/8 bg-white p-5 transition hover:border-brand-primary/25 hover:shadow-[0_12px_40px_-20px_rgba(76,29,149,0.35)]"
+  class:list={[
+    'media-card group flex h-full flex-col border p-5 transition hover:border-brand-primary/25 hover:shadow-[0_12px_40px_-20px_rgba(76,29,149,0.35)]',
+    statusSurface[media.status],
+  ]}
   data-name={media.name.toLowerCase()}
+  data-domain={domainLabel.toLowerCase()}
   data-type={media.type}
   data-province={media.address.province}
   data-status={media.status}
@@ -22,30 +47,20 @@ const { media } = Astro.props;
       class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-primary/8 font-display text-sm font-bold text-brand-primary"
       aria-hidden="true"
     >
-      {media.name.slice(0, 2).toUpperCase()}
+      {avatarLabel}
     </div>
     <StatusBadge status={media.status} />
   </div>
 
   <h3 class="mt-4 font-display text-lg font-bold tracking-tight text-brand-dark">
     <a href={`/directory/${media.slug}`} class="hover:text-brand-light">
-      {media.name}
+      {domainLabel}
     </a>
   </h3>
 
-  <p class="mt-1 text-xs font-medium text-brand-dark/50">
+  <p class="mt-1 flex-1 text-xs font-medium text-brand-dark/50">
     {media.type} · {media.address.city}, {media.address.province}
   </p>
-
-  <div class="mt-4 flex flex-1 flex-wrap content-start gap-1.5">
-    {
-      (media.categories || []).slice(0, 3).map((cat) => (
-        <span class="rounded-md bg-brand-bg px-2 py-0.5 text-[11px] font-medium text-brand-dark/60">
-          {cat}
-        </span>
-      ))
-    }
-  </div>
 
   <div class="mt-5 border-t border-brand-dark/6 pt-4 text-right text-xs">
     <a

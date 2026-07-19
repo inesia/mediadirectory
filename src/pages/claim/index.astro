@@ -7,6 +7,7 @@ import {
   userRoles,
   userStatuses,
 } from '../../lib/data';
+import { provinceList } from '../../lib/wilayah';
 
 const preselect = Astro.url.searchParams.get('media') || '';
 const initialTab = Astro.url.searchParams.get('tab') === 'klaim' ? 'klaim' : 'daftar';
@@ -31,14 +32,14 @@ const userStatusLabels: Record<string, string> = {
 ---
 
 <Layout
-  title="Daftar & Klaim Media"
+  title="Daftar Media & Klaim"
   description="Daftarkan media baru atau ajukan klaim kepemilikan listing di Media Directory Indonesia."
 >
   <div id="claim-app">
   <section class="border-b border-brand-dark/6 bg-white">
     <div class="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8 lg:py-12">
       <p class="text-xs font-semibold uppercase tracking-[0.18em] text-brand-accent">
-        Daftar & Klaim
+        Daftar Media & Klaim
       </p>
       <h1 class="mt-2 font-display text-3xl font-bold tracking-tight sm:text-4xl">
         Daftarkan atau klaim media Anda
@@ -70,7 +71,7 @@ const userStatusLabels: Record<string, string> = {
             : 'border-transparent text-brand-dark/50 hover:text-brand-dark',
         ]}
       >
-        Daftarkan Media
+        Daftar Media
       </button>
       <button
         type="button"
@@ -155,19 +156,26 @@ const userStatusLabels: Record<string, string> = {
           <div class="grid gap-5 sm:grid-cols-2">
             <label class="block sm:col-span-2">
               <span class={labelClass} set:html={`Alamat lengkap ${req}`} />
-              <input type="text" name="street"  placeholder="Jl. … No. …" class={fieldClass} />
+              <input type="text" name="street" placeholder="Jl. … No. …" class={fieldClass} />
             </label>
             <label class="block">
-              <span class={labelClass} set:html={`Kecamatan ${req}`} />
-              <input type="text" name="district"  class={fieldClass} />
+              <span class={labelClass} set:html={`Provinsi ${req}`} />
+              <select name="province" id="addr-province" class={fieldClass}>
+                <option value="">Pilih provinsi</option>
+                {provinceList.map((p) => <option value={p}>{p}</option>)}
+              </select>
             </label>
             <label class="block">
-              <span class={labelClass} set:html={`Kota ${req}`} />
-              <input type="text" name="city"  class={fieldClass} />
+              <span class={labelClass} set:html={`Kota / Kabupaten ${req}`} />
+              <select name="city" id="addr-city" class={fieldClass} disabled>
+                <option value="">Pilih kota / kabupaten</option>
+              </select>
             </label>
             <label class="block sm:col-span-2">
-              <span class={labelClass} set:html={`Provinsi ${req}`} />
-              <input type="text" name="province"  class={fieldClass} />
+              <span class={labelClass} set:html={`Kecamatan ${req}`} />
+              <select name="district" id="addr-district" class={fieldClass} disabled>
+                <option value="">Pilih kecamatan</option>
+              </select>
             </label>
           </div>
         </fieldset>
@@ -366,9 +374,49 @@ const userStatusLabels: Record<string, string> = {
 </Layout>
 
 <script>
+  import { wilayahIndonesia, citiesOf, districtsOf } from '../../lib/wilayah';
+
   const SUBMISSIONS_KEY = 'mdi_submissions';
 
   type SubmissionStatus = 'draft' | 'pending' | 'approved' | 'rejected';
+
+  // ---- Cascading wilayah Indonesia ----
+  const provinceEl = document.getElementById('addr-province') as HTMLSelectElement | null;
+  const cityEl = document.getElementById('addr-city') as HTMLSelectElement | null;
+  const districtEl = document.getElementById('addr-district') as HTMLSelectElement | null;
+
+  function fillSelect(
+    el: HTMLSelectElement | null,
+    options: string[],
+    placeholder: string,
+    enable: boolean,
+  ) {
+    if (!el) return;
+    el.innerHTML = `<option value="">${placeholder}</option>`;
+    options.forEach((name) => {
+      const opt = document.createElement('option');
+      opt.value = name;
+      opt.textContent = name;
+      el.appendChild(opt);
+    });
+    el.disabled = !enable;
+    el.value = '';
+  }
+
+  provinceEl?.addEventListener('change', () => {
+    const province = provinceEl.value;
+    const cities = province && wilayahIndonesia[province] ? citiesOf(province) : [];
+    fillSelect(cityEl, cities, 'Pilih kota / kabupaten', cities.length > 0);
+    fillSelect(districtEl, [], 'Pilih kecamatan', false);
+  });
+
+  cityEl?.addEventListener('change', () => {
+    const province = provinceEl?.value || '';
+    const city = cityEl.value;
+    const districts =
+      province && city ? districtsOf(province, city) : [];
+    fillSelect(districtEl, districts, 'Pilih kecamatan', districts.length > 0);
+  });
 
   function activateTab(tab: string) {
     document.querySelectorAll<HTMLButtonElement>('.form-tab').forEach((b) => {

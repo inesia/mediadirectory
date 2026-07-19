@@ -6,7 +6,7 @@ const links = [
   { href: "/", label: "Beranda" },
   { href: "/directory", label: "Direktori" },
   { href: "/pengajuan", label: "Pengajuan" },
-  { href: "/claim", label: "Daftar & Klaim" },
+  { href: "/claim", label: "Daftar Media & Klaim" },
 ];
 
 const desktopLinks = links.filter((link) => link.href !== "/claim");
@@ -73,20 +73,43 @@ function isActive(href: string) {
             : "border border-brand-accent bg-transparent text-brand-dark hover:bg-brand-accent/10",
         ]}
       >
-        Daftar / Klaim
+        Daftar Media / Klaim
       </a>
-      <a
-        href="/login"
-        id="header-auth"
-        class:list={[
-          "hidden items-center rounded-full px-3 py-2 text-sm font-medium transition duration-300 md:inline-flex",
-          isHome
-            ? "text-white/80 hover:text-white"
-            : "text-brand-dark/70 hover:text-brand-primary",
-        ]}
-      >
-        Masuk
-      </a>
+
+      <!-- Guest: text Masuk · Logged-in: profile icon -->
+      <div id="header-auth-group" class="flex items-center gap-1 sm:gap-2">
+        <a
+          href="/login"
+          id="header-auth-login"
+          class:list={[
+            "header-auth-text inline-flex items-center rounded-full px-3 py-2 text-sm font-medium transition duration-300",
+            isHome
+              ? "text-white/80 hover:text-white"
+              : "text-brand-dark/70 hover:text-brand-primary",
+          ]}
+        >
+          Masuk
+        </a>
+        <a
+          href="/profile"
+          id="header-auth-profile"
+          class:list={[
+            "header-auth-icon hidden h-9 w-9 items-center justify-center rounded-full transition duration-300",
+            isHome
+              ? "border border-white/30 bg-white/10 text-white backdrop-blur-sm hover:bg-white/20"
+              : "border border-brand-dark/12 bg-white text-brand-dark/70 shadow-sm hover:border-brand-primary/30 hover:text-brand-primary",
+          ]}
+          aria-label="Profil"
+          title="Profil"
+          hidden
+        >
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke-linecap="round" stroke-linejoin="round"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </a>
+      </div>
+
       <button
         type="button"
         id="nav-toggle"
@@ -153,7 +176,46 @@ function isActive(href: string) {
   const navLinks = document.querySelectorAll<HTMLElement>(".header-nav-link");
   const navClaim = document.getElementById("header-nav-claim");
   const menuBtn = document.getElementById("nav-toggle");
-  const authEl = document.getElementById("header-auth") as HTMLAnchorElement | null;
+  const authLogin = document.getElementById("header-auth-login") as HTMLAnchorElement | null;
+  const authProfile = document.getElementById("header-auth-profile") as HTMLAnchorElement | null;
+  const authTexts = document.querySelectorAll<HTMLElement>(".header-auth-text");
+
+  const profileHeroClasses = [
+    "border-white/30",
+    "bg-white/10",
+    "text-white",
+    "backdrop-blur-sm",
+    "hover:bg-white/20",
+  ];
+  const profileSolidClasses = [
+    "border-brand-dark/12",
+    "bg-white",
+    "text-brand-dark/70",
+    "shadow-sm",
+    "hover:border-brand-primary/30",
+    "hover:text-brand-primary",
+  ];
+
+  function styleAuthChrome(solid: boolean) {
+    authTexts.forEach((el) => {
+      if (solid) {
+        el.classList.remove("text-white/80", "hover:text-white");
+        el.classList.add("text-brand-dark/70", "hover:text-brand-primary");
+      } else {
+        el.classList.remove("text-brand-dark/70", "hover:text-brand-primary");
+        el.classList.add("text-white/80", "hover:text-white");
+      }
+    });
+
+    if (!authProfile) return;
+    if (solid) {
+      authProfile.classList.remove(...profileHeroClasses);
+      authProfile.classList.add(...profileSolidClasses);
+    } else {
+      authProfile.classList.remove(...profileSolidClasses);
+      authProfile.classList.add(...profileHeroClasses);
+    }
+  }
 
   function getThreshold() {
     return Math.max(window.innerHeight - 80, 60);
@@ -229,8 +291,7 @@ function isActive(href: string) {
       "hover:border-brand-primary/30",
     );
 
-    authEl?.classList.remove("text-white/80", "hover:text-white");
-    authEl?.classList.add("text-brand-dark/70", "hover:text-brand-primary");
+    styleAuthChrome(true);
   }
 
   function setHeroChrome() {
@@ -271,8 +332,7 @@ function isActive(href: string) {
       "hover:bg-white/20",
     );
 
-    authEl?.classList.remove("text-brand-dark/70", "hover:text-brand-primary");
-    authEl?.classList.add("text-white/80", "hover:text-white");
+    styleAuthChrome(false);
   }
 
   function syncHeader() {
@@ -302,34 +362,26 @@ function isActive(href: string) {
     syncHeader();
   }
 
-  // Auth menu: Masuk → Profil setelah login
-  const mobileNav = document.getElementById("mobile-nav")?.querySelector("nav");
+  // Guest: text Masuk · Logged-in: profile icon
   try {
     const auth = JSON.parse(localStorage.getItem("mdi_auth") || "null");
-    if (auth?.email && authEl) {
-      authEl.textContent = "Profil";
-      authEl.href = "/profile";
-      if (mobileNav && !mobileNav.querySelector("[data-auth-mobile]")) {
-        const a = document.createElement("a");
-        a.href = "/profile";
-        a.dataset.authMobile = "1";
-        a.className =
-          "rounded-lg px-3 py-2.5 text-sm font-medium text-brand-dark/80 hover:bg-brand-bg hover:text-brand-primary";
-        a.textContent = "Profil";
-        mobileNav.appendChild(a);
+    const loggedIn = Boolean(auth?.email);
+
+    if (loggedIn) {
+      authLogin?.classList.add("hidden");
+      authLogin?.setAttribute("hidden", "");
+      authProfile?.classList.remove("hidden");
+      authProfile?.classList.add("inline-flex");
+      authProfile?.removeAttribute("hidden");
+    } else {
+      if (authLogin) {
+        authLogin.href = `/login?next=${encodeURIComponent(window.location.pathname)}`;
       }
-    } else if (authEl) {
-      authEl.textContent = "Masuk";
-      authEl.href = `/login?next=${encodeURIComponent(window.location.pathname)}`;
-      if (mobileNav && !mobileNav.querySelector("[data-auth-mobile]")) {
-        const a = document.createElement("a");
-        a.href = authEl.href;
-        a.dataset.authMobile = "1";
-        a.className =
-          "rounded-lg px-3 py-2.5 text-sm font-medium text-brand-dark/80 hover:bg-brand-bg hover:text-brand-primary";
-        a.textContent = "Masuk";
-        mobileNav.appendChild(a);
-      }
+      authLogin?.classList.remove("hidden");
+      authLogin?.removeAttribute("hidden");
+      authProfile?.classList.add("hidden");
+      authProfile?.classList.remove("inline-flex");
+      authProfile?.setAttribute("hidden", "");
     }
   } catch {
     /* ignore */

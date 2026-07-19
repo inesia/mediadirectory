@@ -211,3 +211,30 @@
     transform: translateY(0);
   }
 }
+
+/* Benefits reveal */
+.benefit-item {
+  animation: benefit-rise 0.7s ease both;
+}
+.benefit-item:nth-child(1) {
+  animation-delay: 0.05s;
+}
+.benefit-item:nth-child(2) {
+  animation-delay: 0.12s;
+}
+.benefit-item:nth-child(3) {
+  animation-delay: 0.19s;
+}
+.benefit-item:nth-child(4) {
+  animation-delay: 0.26s;
+}
+@keyframes benefit-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

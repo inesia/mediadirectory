@@ -236,6 +236,160 @@ const latest = [...mediaOutlets]
     </div>
   </section>
 
+  <!-- Benefits — for media owners -->
+  <section
+    class="relative overflow-hidden border-b border-brand-dark/6 bg-white"
+    aria-labelledby="benefits-heading"
+  >
+    <div
+      class="pointer-events-none absolute inset-0 opacity-[0.35]"
+      aria-hidden="true"
+      style="background-image: radial-gradient(circle at 12% 20%, rgba(76,29,149,0.08), transparent 42%), radial-gradient(circle at 88% 70%, rgba(245,158,11,0.1), transparent 40%);"
+    >
+    </div>
+    <div class="relative mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
+      <div class="mx-auto max-w-3xl text-center">
+        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-brand-accent">
+          Mengapa media directory
+        </p>
+        <h2
+          id="benefits-heading"
+          class="mt-3 font-display text-2xl font-extrabold tracking-tight text-brand-dark text-balance sm:text-3xl lg:text-4xl"
+        >
+          Bawa media Anda ke level berikutnya. Klaim kepemilikan sekarang.
+        </h2>
+        <p class="mt-4 text-sm leading-relaxed text-brand-dark/65 sm:text-base">
+          Bergabunglah dengan ratusan ekosistem media terpercaya. Amankan identitas
+          brand Anda, dapatkan lencana verifikasi, dan buka akses ke peluang
+          monetisasi serta kolaborasi eksklusif.
+        </p>
+      </div>
+
+      <ul class="mt-12 grid gap-10 sm:mt-14 sm:grid-cols-2 lg:gap-x-10 lg:gap-y-12">
+        {
+          [
+            {
+              title: "Proteksi brand & anti-klaim palsu",
+              points: [
+                {
+                  label: "Amankan aset digital Anda",
+                  text: "Pastikan identitas dan nama media Anda tidak disalahgunakan atau diklaim oleh pihak yang tidak bertanggung jawab.",
+                },
+                {
+                  label: "Hak akses penuh",
+                  text: "Hanya pemilik sah yang terverifikasi yang dapat memperbarui informasi, mengganti logo, dan mengelola profil media.",
+                },
+              ],
+              icon: "shield",
+            },
+            {
+              title: "Lencana terverifikasi",
+              points: [
+                {
+                  label: "Tingkatkan kredibilitas",
+                  text: "Dapatkan lencana Approved setelah admin memverifikasi legalitas media Anda.",
+                },
+                {
+                  label: "Magnet kepercayaan",
+                  text: "Media terverifikasi lebih dilirik calon pengiklan, brand, dan agensi karena legalitasnya yang jelas.",
+                },
+              ],
+              icon: "badge",
+            },
+            {
+              title: "Visibilitas maksimal untuk calon pengiklan",
+              points: [
+                {
+                  label: "Masuk radar agensi & brand",
+                  text: "Profil Anda masuk katalog pencarian utama yang diakses perusahaan pencari mitra publikasi.",
+                },
+                {
+                  label: "Statistik terpusat",
+                  text: "Tampilkan metrik terbaik langsung ke calon klien tanpa mengirim media kit berkali-kali.",
+                },
+              ],
+              icon: "chart",
+            },
+            {
+              title: "Monetisasi & kampanye eksklusif",
+              points: [
+                {
+                  label: "Undangan kampanye langsung",
+                  text: "Dapatkan tawaran sponsored post, content placement, atau iklan berdasarkan kategori media Anda.",
+                },
+                {
+                  label: "Komunitas & insight",
+                  text: "Akses tren industri media terbaru dan peluang kolaborasi antar pemilik media di dalam platform.",
+                },
+              ],
+              icon: "spark",
+            },
+          ].map((item) => (
+            <li class="benefit-item group">
+              <div class="flex items-start gap-4">
+                <span
+                  class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-primary/8 text-brand-primary transition group-hover:bg-brand-accent/15 group-hover:text-amber-700"
+                  aria-hidden="true"
+                >
+                  {item.icon === "shield" && (
+                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M12 3l8 3v6c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V6l8-3z" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                  )}
+                  {item.icon === "badge" && (
+                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M12 3l2.1 4.3 4.7.7-3.4 3.3.8 4.7L12 14.3 7.8 16l.8-4.7L5.2 8l4.7-.7L12 3z" stroke-linecap="round" stroke-linejoin="round"></path>
+                      <circle cx="12" cy="12" r="9"></circle>
+                    </svg>
+                  )}
+                  {item.icon === "chart" && (
+                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M4 19V5M4 19h16" stroke-linecap="round"></path>
+                      <path d="M8 16v-5M12 16V8M16 16v-8" stroke-linecap="round"></path>
+                    </svg>
+                  )}
+                  {item.icon === "spark" && (
+                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8" stroke-linecap="round"></path>
+                    </svg>
+                  )}
+                </span>
+                <div class="min-w-0 flex-1">
+                  <h3 class="font-display text-lg font-bold tracking-tight text-brand-dark">
+                    {item.title}
+                  </h3>
+                  <ul class="mt-3 space-y-3">
+                    {item.points.map((point) => (
+                      <li>
+                        <p class="text-sm font-semibold text-brand-dark/85">{point.label}</p>
+                        <p class="mt-0.5 text-sm leading-relaxed text-brand-dark/60">{point.text}</p>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </li>
+          ))
+        }
+      </ul>
+
+      <div class="mt-12 flex flex-wrap items-center justify-center gap-3 sm:mt-14">
+        <a
+          href="/claim?tab=klaim"
+          class="inline-flex items-center rounded-full bg-brand-accent px-6 py-3 text-sm font-bold text-brand-dark shadow-[0_8px_24px_-8px_rgba(245,158,11,0.65)] transition hover:bg-amber-400"
+        >
+          Klaim kepemilikan sekarang
+        </a>
+        <a
+          href="/claim?tab=daftar"
+          class="inline-flex items-center rounded-full border border-brand-dark/12 px-5 py-2.5 text-sm font-semibold text-brand-dark transition hover:border-brand-primary/30 hover:text-brand-primary"
+        >
+          Daftarkan media
+        </a>
+      </div>
+    </div>
+  </section>
+
   <!-- Cara kerja -->
   <section class="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
     <div class="mx-auto max-w-2xl text-center">
