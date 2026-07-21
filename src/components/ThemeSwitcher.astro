@@ -1,0 +1,61 @@
+---
+---
+
+<div id="theme-switcher-widget" class="fixed bottom-5 right-5 z-[9999] flex items-center gap-2 rounded-full border border-white/20 bg-slate-900/90 p-1.5 shadow-2xl backdrop-blur-md transition-all hover:scale-105">
+  <button
+    id="theme-btn-purple"
+    type="button"
+    title="Tema Ungu - Default"
+    class="flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-white/10"
+  >
+    <span class="h-3.5 w-3.5 rounded-full bg-purple-600 ring-2 ring-purple-400"></span>
+    <span class="hidden sm:inline">Ungu</span>
+  </button>
+  
+  <div class="h-4 w-px bg-white/20"></div>
+
+  <button
+    id="theme-btn-red"
+    type="button"
+    title="Tema Merah - Indonesia"
+    class="flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-white/10"
+  >
+    <span class="h-3.5 w-3.5 rounded-full bg-red-600 ring-2 ring-red-400"></span>
+    <span class="hidden sm:inline">Merah-Putih</span>
+  </button>
+</div>
+
+<script>
+  function initThemeSwitcher() {
+    const btnPurple = document.getElementById('theme-btn-purple');
+    const btnRed = document.getElementById('theme-btn-red');
+    
+    // Check saved theme or default to purple
+    const currentTheme = localStorage.getItem('demo-theme') || 'purple';
+    applyTheme(currentTheme);
+
+    btnPurple?.addEventListener('click', () => applyTheme('purple'));
+    btnRed?.addEventListener('click', () => applyTheme('red'));
+
+    function applyTheme(theme: string) {
+      if (theme === 'red') {
+        document.documentElement.setAttribute('data-theme', 'red');
+        localStorage.setItem('demo-theme', 'red');
+        
+        btnRed?.classList.add('bg-white/20', 'ring-1', 'ring-white/40');
+        btnPurple?.classList.remove('bg-white/20', 'ring-1', 'ring-white/40');
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+        localStorage.setItem('demo-theme', 'purple');
+        
+        btnPurple?.classList.add('bg-white/20', 'ring-1', 'ring-white/40');
+        btnRed?.classList.remove('bg-white/20', 'ring-1', 'ring-white/40');
+      }
+    }
+  }
+
+  // Run on page load
+  initThemeSwitcher();
+  // Support Astro view transitions if any
+  document.addEventListener('astro:after-swap', initThemeSwitcher);
+</script>
