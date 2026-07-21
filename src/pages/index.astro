@@ -11,7 +11,7 @@ import {
 const stats = getDirectoryStats();
 const featured = mediaOutlets
   .filter((m) => m.status === "verified")
-  .slice(0, 3);
+  .slice(0, 6);
 const latest = [...mediaOutlets]
   .sort((a, b) => {
     const dateA = a.registeredAt || "1970-01-01";
@@ -73,14 +73,14 @@ const latest = [...mediaOutlets]
       <h1
         class="max-w-2xl font-display text-4xl font-extrabold leading-[1.1] tracking-tight text-white text-balance sm:text-5xl lg:text-6xl"
       >
-        Cari media &amp; ruang<br class="hidden sm:block" />
-        <span class="hero-gradient-text">redaksi Indonesia.</span>
+        Direktori Media <span class="hero-gradient-text">Nasional</span>
       </h1>
       <p
         class="mt-5 max-w-xl text-sm leading-relaxed text-white/65 sm:text-base"
       >
-        Temukan outlet berita, radio, TV, hingga podcast — filter berdasarkan
-        jenis, lokasi, dan status verifikasi.
+        Temukan profil &amp; data media lokal dan Nasional se-Indonesia. Dari
+        media siber, radio, TV, sosial, dan lainnya dari ratusan kabupaten &amp;
+        kota di Nusantara.
       </p>
 
       <!-- Search bar -->
@@ -204,19 +204,21 @@ const latest = [...mediaOutlets]
 
       <!-- Stats + standout CTA -->
       <div class="mt-8 flex flex-col items-center gap-4">
-        <p class="text-[11px] font-semibold text-white/55">
-          <span class="text-white/90">{stats.total}</span> media terdaftar &nbsp;·&nbsp;
-          <span class="text-white/90">{stats.verified}</span> terverifikasi
-        </p>
         <a
           href="/claim?tab=daftar"
           class="group inline-flex items-center gap-2 rounded-full bg-brand-accent px-6 py-3 text-sm font-bold text-brand-dark shadow-[0_8px_30px_-8px_rgba(245,158,11,0.7)] transition hover:bg-amber-400 hover:shadow-[0_12px_36px_-8px_rgba(245,158,11,0.85)] hover:scale-[1.02]"
         >
           <span
             class="flex h-5 w-5 items-center justify-center rounded-full bg-brand-dark/15 text-xs font-bold transition group-hover:bg-brand-dark/20"
-            aria-hidden="true"
-          >+</span>
+            aria-hidden="true">+</span
+          >
           Daftarkan media Anda
+        </a>
+        <a
+          href="/claim?tab=klaim"
+          class="text-xs font-semibold text-white/70 transition-colors duration-200 hover:text-white border-b border-transparent hover:border-white/50 pb-0.5"
+        >
+          Sudah Ada? Klaim &amp; Update Profil Media Anda di Sini
         </a>
       </div>
 
@@ -226,20 +228,22 @@ const latest = [...mediaOutlets]
         aria-hidden="true"
       >
         {
-          ["Website", "TV", "Radio", "Podcast", "YouTube", "Newspaper"].map((t) => (
-            <span class="rounded-full border border-white/10 bg-white/8 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white/50 backdrop-blur-sm">
-              {t}
-            </span>
-          ))
+          ["Website", "TV", "Radio", "Podcast", "YouTube", "Newspaper"].map(
+            (t) => (
+              <span class="rounded-full border border-white/10 bg-white/8 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white/50 backdrop-blur-sm">
+                {t}
+              </span>
+            ),
+          )
         }
       </div>
     </div>
   </section>
 
-  <!-- Benefits — for media owners -->
+  <!-- Perkenalkan Section -->
   <section
     class="relative overflow-hidden border-b border-brand-dark/6 bg-white"
-    aria-labelledby="benefits-heading"
+    aria-labelledby="perkenalkan-heading"
   >
     <div
       class="pointer-events-none absolute inset-0 opacity-[0.35]"
@@ -247,148 +251,320 @@ const latest = [...mediaOutlets]
       style="background-image: radial-gradient(circle at 12% 20%, rgba(76,29,149,0.08), transparent 42%), radial-gradient(circle at 88% 70%, rgba(245,158,11,0.1), transparent 40%);"
     >
     </div>
-    <div class="relative mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
-      <div class="mx-auto max-w-3xl text-center">
-        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-brand-accent">
-          Mengapa media directory
-        </p>
-        <h2
-          id="benefits-heading"
-          class="mt-3 font-display text-2xl font-extrabold tracking-tight text-brand-dark text-balance sm:text-3xl lg:text-4xl"
+    <div
+      class="relative mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16 lg:px-8 lg:py-20"
+    >
+      <div class="grid gap-12 lg:grid-cols-12 lg:items-center">
+        <!-- Graphic column -->
+        <div
+          class="lg:col-span-5 relative flex flex-col items-center justify-center"
         >
-          Bawa media Anda ke level berikutnya. Klaim kepemilikan sekarang.
-        </h2>
-        <p class="mt-4 text-sm leading-relaxed text-brand-dark/65 sm:text-base">
-          Bergabunglah dengan ratusan ekosistem media terpercaya. Amankan identitas
-          brand Anda, dapatkan lencana verifikasi, dan buka akses ke peluang
-          monetisasi serta kolaborasi eksklusif.
-        </p>
-      </div>
+          <svg
+            viewBox="0 0 500 400"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-full max-w-[400px] h-auto drop-shadow-2xl"
+          >
+            <!-- Grid background / decorative blobs -->
+            <circle
+              cx="250"
+              cy="200"
+              r="160"
+              fill="url(#bg-gradient)"
+              opacity="0.15"></circle>
 
-      <ul class="mt-12 grid gap-10 sm:mt-14 sm:grid-cols-2 lg:gap-x-10 lg:gap-y-12">
-        {
-          [
-            {
-              title: "Proteksi brand & anti-klaim palsu",
-              points: [
-                {
-                  label: "Amankan aset digital Anda",
-                  text: "Pastikan identitas dan nama media Anda tidak disalahgunakan atau diklaim oleh pihak yang tidak bertanggung jawab.",
-                },
-                {
-                  label: "Hak akses penuh",
-                  text: "Hanya pemilik sah yang terverifikasi yang dapat memperbarui informasi, mengganti logo, dan mengelola profil media.",
-                },
-              ],
-              icon: "shield",
-            },
-            {
-              title: "Lencana terverifikasi",
-              points: [
-                {
-                  label: "Tingkatkan kredibilitas",
-                  text: "Dapatkan lencana Approved setelah admin memverifikasi legalitas media Anda.",
-                },
-                {
-                  label: "Magnet kepercayaan",
-                  text: "Media terverifikasi lebih dilirik calon pengiklan, brand, dan agensi karena legalitasnya yang jelas.",
-                },
-              ],
-              icon: "badge",
-            },
-            {
-              title: "Visibilitas maksimal untuk calon pengiklan",
-              points: [
-                {
-                  label: "Masuk radar agensi & brand",
-                  text: "Profil Anda masuk katalog pencarian utama yang diakses perusahaan pencari mitra publikasi.",
-                },
-                {
-                  label: "Statistik terpusat",
-                  text: "Tampilkan metrik terbaik langsung ke calon klien tanpa mengirim media kit berkali-kali.",
-                },
-              ],
-              icon: "chart",
-            },
-            {
-              title: "Monetisasi & kampanye eksklusif",
-              points: [
-                {
-                  label: "Undangan kampanye langsung",
-                  text: "Dapatkan tawaran sponsored post, content placement, atau iklan berdasarkan kategori media Anda.",
-                },
-                {
-                  label: "Komunitas & insight",
-                  text: "Akses tren industri media terbaru dan peluang kolaborasi antar pemilik media di dalam platform.",
-                },
-              ],
-              icon: "spark",
-            },
-          ].map((item) => (
-            <li class="benefit-item group">
-              <div class="flex items-start gap-4">
-                <span
-                  class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-primary/8 text-brand-primary transition group-hover:bg-brand-accent/15 group-hover:text-amber-700"
-                  aria-hidden="true"
-                >
-                  {item.icon === "shield" && (
-                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="M12 3l8 3v6c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V6l8-3z" stroke-linecap="round" stroke-linejoin="round"></path>
-                    </svg>
-                  )}
-                  {item.icon === "badge" && (
-                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="M12 3l2.1 4.3 4.7.7-3.4 3.3.8 4.7L12 14.3 7.8 16l.8-4.7L5.2 8l4.7-.7L12 3z" stroke-linecap="round" stroke-linejoin="round"></path>
-                      <circle cx="12" cy="12" r="9"></circle>
-                    </svg>
-                  )}
-                  {item.icon === "chart" && (
-                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="M4 19V5M4 19h16" stroke-linecap="round"></path>
-                      <path d="M8 16v-5M12 16V8M16 16v-8" stroke-linecap="round"></path>
-                    </svg>
-                  )}
-                  {item.icon === "spark" && (
-                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M18.4 5.6l-2.8 2.8M8.4 15.6l-2.8 2.8" stroke-linecap="round"></path>
-                    </svg>
-                  )}
-                </span>
-                <div class="min-w-0 flex-1">
-                  <h3 class="font-display text-lg font-bold tracking-tight text-brand-dark">
-                    {item.title}
-                  </h3>
-                  <ul class="mt-3 space-y-3">
-                    {item.points.map((point) => (
-                      <li>
-                        <p class="text-sm font-semibold text-brand-dark/85">{point.label}</p>
-                        <p class="mt-0.5 text-sm leading-relaxed text-brand-dark/60">{point.text}</p>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </li>
-          ))
-        }
-      </ul>
+            <!-- Notebook / Files (Back layer) -->
+            <rect
+              x="70"
+              y="80"
+              width="130"
+              height="170"
+              rx="6"
+              fill="#FBBF24"
+              transform="rotate(-12, 135, 165)"></rect>
+            <rect
+              x="80"
+              y="90"
+              width="110"
+              height="150"
+              rx="4"
+              fill="#F59E0B"
+              transform="rotate(-12, 135, 165)"></rect>
+            <rect
+              x="90"
+              y="100"
+              width="30"
+              height="15"
+              rx="2"
+              fill="#FFF"
+              opacity="0.4"
+              transform="rotate(-12, 135, 165)"></rect>
 
-      <div class="mt-12 flex flex-wrap items-center justify-center gap-3 sm:mt-14">
-        <a
-          href="/claim?tab=klaim"
-          class="inline-flex items-center rounded-full bg-brand-accent px-6 py-3 text-sm font-bold text-brand-dark shadow-[0_8px_24px_-8px_rgba(245,158,11,0.65)] transition hover:bg-amber-400"
-        >
-          Klaim kepemilikan sekarang
-        </a>
-        <a
-          href="/claim?tab=daftar"
-          class="inline-flex items-center rounded-full border border-brand-dark/12 px-5 py-2.5 text-sm font-semibold text-brand-dark transition hover:border-brand-primary/30 hover:text-brand-primary"
-        >
-          Daftarkan media
-        </a>
+            <!-- Papers -->
+            <rect
+              x="40"
+              y="120"
+              width="110"
+              height="140"
+              rx="4"
+              fill="#E2E8F0"
+              transform="rotate(-5, 95, 190)"></rect>
+            <rect
+              x="45"
+              y="125"
+              width="100"
+              height="130"
+              rx="2"
+              fill="#FFFFFF"
+              transform="rotate(-5, 95, 190)"></rect>
+            <line
+              x1="55"
+              y1="145"
+              x2="125"
+              y2="145"
+              stroke="#94A3B8"
+              stroke-width="3"
+              transform="rotate(-5, 95, 190)"></line>
+            <line
+              x1="55"
+              y1="160"
+              x2="115"
+              y2="160"
+              stroke="#94A3B8"
+              stroke-width="3"
+              transform="rotate(-5, 95, 190)"></line>
+            <line
+              x1="55"
+              y1="175"
+              x2="125"
+              y2="175"
+              stroke="#94A3B8"
+              stroke-width="3"
+              transform="rotate(-5, 95, 190)"></line>
+            <line
+              x1="55"
+              y1="190"
+              x2="105"
+              y2="190"
+              stroke="#94A3B8"
+              stroke-width="3"
+              transform="rotate(-5, 95, 190)"></line>
+
+            <!-- Laptop (Middle layer) -->
+            <!-- Screen Back -->
+            <rect x="150" y="100" width="220" height="140" rx="8" fill="#1E293B"
+            ></rect>
+            <!-- Screen Inner -->
+            <rect x="156" y="106" width="208" height="120" rx="4" fill="#0F172A"
+            ></rect>
+            <!-- Mock Web Page on Laptop Screen -->
+            <rect
+              x="166"
+              y="116"
+              width="188"
+              height="15"
+              rx="2"
+              fill="#38BDF8"
+              opacity="0.8"></rect>
+            <!-- Header -->
+            <circle cx="173" cy="123" r="3" fill="#FFF"></circle>
+            <rect
+              x="182"
+              y="121"
+              width="30"
+              height="4"
+              rx="1"
+              fill="#FFF"
+              opacity="0.6"></rect>
+            <rect
+              x="220"
+              y="121"
+              width="20"
+              height="4"
+              rx="1"
+              fill="#FFF"
+              opacity="0.6"></rect>
+            <!-- Dashboard Grid -->
+            <rect x="166" y="137" width="50" height="35" rx="3" fill="#1E293B"
+            ></rect>
+            <!-- Card 1 -->
+            <rect x="172" y="143" width="38" height="5" rx="1.5" fill="#34D399"
+            ></rect>
+            <rect x="172" y="152" width="25" height="3" rx="1.5" fill="#64748B"
+            ></rect>
+            <rect x="172" y="158" width="30" height="3" rx="1.5" fill="#64748B"
+            ></rect>
+
+            <rect x="222" y="137" width="60" height="35" rx="3" fill="#1E293B"
+            ></rect>
+            <!-- Card 2 -->
+            <circle cx="232" cy="147" r="5" fill="#FBBF24"></circle>
+            <rect x="242" y="143" width="35" height="4" rx="1.5" fill="#64748B"
+            ></rect>
+            <rect x="242" y="150" width="25" height="3" rx="1.5" fill="#64748B"
+            ></rect>
+
+            <rect x="288" y="137" width="66" height="35" rx="3" fill="#1E293B"
+            ></rect>
+            <!-- Card 3 -->
+            <rect x="294" y="143" width="40" height="5" rx="1.5" fill="#38BDF8"
+            ></rect>
+            <rect x="294" y="152" width="50" height="3" rx="1.5" fill="#64748B"
+            ></rect>
+
+            <rect x="166" y="178" width="188" height="40" rx="3" fill="#1E293B"
+            ></rect>
+            <!-- Large Chart Card -->
+            <path
+              d="M 172 210 L 200 195 L 230 202 L 260 188 L 290 200 L 320 190 L 348 198"
+              stroke="#34D399"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"></path>
+
+            <!-- Laptop Keyboard Base -->
+            <path d="M 130 238 L 390 238 L 410 268 L 110 268 Z" fill="#475569"
+            ></path>
+            <!-- Laptop Trackpad -->
+            <rect x="225" y="256" width="50" height="10" rx="2" fill="#334155"
+            ></rect>
+            <!-- Laptop Keyboard lines -->
+            <rect
+              x="140"
+              y="242"
+              width="220"
+              height="10"
+              rx="1.5"
+              fill="#334155"></rect>
+            <line
+              x1="145"
+              y1="247"
+              x2="355"
+              y2="247"
+              stroke="#1E293B"
+              stroke-width="2"
+              stroke-dasharray="8 3"></line>
+
+            <!-- Smartphone (Front Right) -->
+            <g transform="rotate(8, 410, 200)">
+              <rect
+                x="370"
+                y="160"
+                width="55"
+                height="105"
+                rx="8"
+                fill="#0F172A"
+                stroke="#475569"
+                stroke-width="2"></rect>
+              <rect x="373" y="168" width="49" height="88" rx="5" fill="#1E293B"
+              ></rect>
+              <circle cx="397.5" cy="164" r="1.5" fill="#475569"></circle>
+              <circle cx="397.5" cy="260" r="2.5" fill="#475569"></circle>
+              <!-- Phone Content -->
+              <rect
+                x="378"
+                y="176"
+                width="39"
+                height="12"
+                rx="2"
+                fill="#34D399"
+                opacity="0.9"></rect>
+              <!-- Title block -->
+              <rect x="378" y="193" width="39" height="40" rx="2" fill="#0F172A"
+              ></rect>
+              <!-- Image block -->
+              <path d="M397.5 203 L403 213 L392 213 Z" fill="#475569"></path>
+              <circle cx="397.5" cy="225" r="5" fill="#34D399"></circle>
+            </g>
+
+            <!-- Headphones (Front Left) -->
+            <g transform="rotate(-15, 110, 280)">
+              <path
+                d="M 80 290 A 45 45 0 0 1 170 290"
+                stroke="#64748B"
+                stroke-width="8"
+                stroke-linecap="round"
+                fill="none"></path>
+              <rect x="70" y="280" width="16" height="30" rx="5" fill="#334155"
+              ></rect>
+              <rect x="164" y="280" width="16" height="30" rx="5" fill="#334155"
+              ></rect>
+              <rect x="74" y="285" width="8" height="20" rx="2" fill="#FBBF24"
+              ></rect>
+              <rect x="168" y="285" width="8" height="20" rx="2" fill="#FBBF24"
+              ></rect>
+            </g>
+
+            <!-- Pen -->
+            <rect
+              x="100"
+              y="290"
+              width="8"
+              height="90"
+              rx="2"
+              fill="#1E3A8A"
+              transform="rotate(45, 100, 290)"></rect>
+
+            <!-- Gradients definitions -->
+            <defs>
+              <radialGradient id="bg-gradient" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#4F46E5"></stop>
+                <stop offset="100%" stop-color="#F59E0B"></stop>
+              </radialGradient>
+            </defs>
+          </svg>
+        </div>
+
+        <!-- Content column -->
+        <div class="lg:col-span-7 flex flex-col justify-center text-left">
+          <h2
+            id="perkenalkan-heading"
+            class="font-display text-3xl font-extrabold tracking-tight text-brand-dark sm:text-4xl lg:text-4xl mb-6"
+          >
+            Perkenalkan, Media Directory Indonesia
+          </h2>
+          <div
+            class="space-y-5 text-sm sm:text-base text-brand-dark/75 leading-relaxed"
+          >
+            <p>
+              Sebuah direktori media nasional yang mempertemukan perusahaan
+              media dengan pemerintah, dunia usaha, agensi, akademisi, dan
+              masyarakat.
+            </p>
+            <p>
+              Setiap media memiliki halaman profil resmi yang dapat dikelola
+              sendiri untuk menampilkan identitas, jangkauan, kanal distribusi,
+              serta informasi kerja sama.
+            </p>
+            <p class="font-semibold text-brand-dark flex items-center gap-2">
+              <span
+                >Pendaftaran profil media <strong
+                  class="font-extrabold text-brand-primary bg-brand-primary/10 px-2 py-0.5 rounded"
+                  >100% GRATIS</strong
+                >, tidak dipungut biaya.</span
+              >
+            </p>
+          </div>
+
+          <div class="mt-8 flex flex-wrap items-center gap-3">
+            <a
+              href="/claim?tab=klaim"
+              class="inline-flex items-center rounded-full bg-brand-accent px-6 py-3 text-sm font-bold text-brand-dark shadow-[0_8px_24px_-8px_rgba(245,158,11,0.65)] transition hover:bg-amber-400"
+            >
+              Klaim kepemilikan sekarang
+            </a>
+            <a
+              href="/claim?tab=daftar"
+              class="inline-flex items-center rounded-full border border-brand-dark/12 px-5 py-2.5 text-sm font-semibold text-brand-dark transition hover:border-brand-primary/30 hover:text-brand-primary bg-white"
+            >
+              Daftarkan media
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   </section>
+
 
   <!-- Cara kerja -->
   <section class="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
@@ -447,11 +623,10 @@ const latest = [...mediaOutlets]
           <h2
             class="font-display text-xl font-extrabold tracking-tight sm:text-2xl text-brand-dark"
           >
-            Media Terverifikasi Unggulan
+            Media Favorit untuk Anda
           </h2>
           <p class="mt-1 text-xs text-brand-dark/60">
-            Contoh ruang redaksi nasional terkemuka yang sudah memiliki badge
-            Terverifikasi.
+            Daftar media yang populer di masyarakat, berbasis data
           </p>
         </div>
         <a
@@ -463,7 +638,68 @@ const latest = [...mediaOutlets]
       </div>
 
       <div class="mt-6 grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-        {featured.slice(0, 3).map((media) => <MediaCard media={media} />)}
+        {featured.slice(0, 6).map((media) => <MediaCard media={media} />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- Bangun Profil Section -->
+  <section
+    class="relative overflow-hidden border-b border-brand-dark/6 bg-slate-50/50"
+    aria-labelledby="bangun-profil-heading"
+  >
+    <div
+      class="pointer-events-none absolute inset-0 opacity-[0.25]"
+      aria-hidden="true"
+      style="background-image: radial-gradient(circle at 80% 20%, rgba(76,29,149,0.06), transparent 40%), radial-gradient(circle at 20% 80%, rgba(245,158,11,0.08), transparent 40%);"
+    >
+    </div>
+    <div class="relative mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
+      <div class="grid gap-12 lg:grid-cols-12 lg:items-center">
+        <!-- Content column -->
+        <div class="lg:col-span-7 flex flex-col justify-center text-left">
+          <h2
+            id="bangun-profil-heading"
+            class="font-display text-3xl font-extrabold tracking-tight text-brand-dark sm:text-4xl lg:text-4xl mb-6 text-balance"
+          >
+            Bangun Profil Resmi Media Anda di Media Directory Indonesia
+          </h2>
+          <p class="text-sm sm:text-base text-brand-dark/80 font-semibold mb-6">
+            Dengan terdata di MediaDirectory.ID, media Anda akan mendapatkan:
+          </p>
+          <ul class="space-y-4 text-sm sm:text-base text-brand-dark/75">
+            {
+              [
+                "Peluang kerja sama iklan dan kampanye daerah hingga nasional.",
+                "Akses ke distribusi siaran pers.",
+                "Masuk radar media buying brand, agensi, hingga instansi.",
+                "Verifikasi profil media resmi.",
+                "Visibilitas & Visibilitas SEO",
+                "Kontrol penuh atas laman profil media Anda."
+              ].map((benefit) => (
+                <li class="flex items-start gap-3">
+                  <svg class="h-5.5 w-5.5 text-emerald-500 shrink-0 mt-0.5 bg-emerald-50 rounded-full p-1" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                  </svg>
+                  <span>{benefit}</span>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+
+        <!-- Image column -->
+        <div class="lg:col-span-5 relative flex justify-center">
+          <div class="relative group">
+            <div class="absolute -inset-1 rounded-2xl bg-gradient-to-tr from-brand-primary/20 to-brand-accent/20 opacity-75 blur-lg transition duration-1000 group-hover:opacity-100"></div>
+            <img
+              src="/images/professional_woman_presenting.png"
+              alt="Bangun Profil Resmi Media Anda"
+              class="relative rounded-2xl shadow-xl w-full max-w-[380px] h-auto object-cover border border-white/40"
+              loading="lazy"
+            />
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -477,11 +713,10 @@ const latest = [...mediaOutlets]
         <h2
           class="font-display text-xl font-extrabold tracking-tight sm:text-2xl text-brand-dark"
         >
-          Media Terbaru
+          Baru Ditambahkan
         </h2>
         <p class="mt-1 text-xs text-brand-dark/60">
-          Redaksi dan outlet media yang baru saja ditambahkan ke dalam
-          direktori.
+          Daftar profil media terbaru yang masuk Direktori Media Nasional
         </p>
       </div>
       <a
@@ -498,27 +733,44 @@ const latest = [...mediaOutlets]
   </section>
 
   <!-- CTA -->
-  <section class="mx-auto max-w-6xl px-4 pb-12 pt-4 sm:px-6 lg:px-8">
+  <section class="mx-auto max-w-6xl px-4 pb-12 pt-4 sm:px-6 lg:px-8 flex flex-col gap-10">
+    <!-- Banner: Belum terdaftar -->
     <div
-      class="flex flex-col items-start gap-4 rounded-2xl bg-brand-primary px-6 py-6 text-white sm:flex-row sm:items-center sm:justify-between sm:px-8 sm:py-8"
+      class="flex flex-col items-start gap-6 rounded-2xl bg-brand-primary px-6 py-8 text-white sm:flex-row sm:items-center sm:justify-between sm:px-10 sm:py-10 shadow-lg"
     >
       <div class="max-w-xl">
         <h2
-          class="font-display text-lg font-bold tracking-tight sm:text-xl text-white"
+          class="font-display text-xl font-bold tracking-tight text-white sm:text-2xl"
         >
           Media Anda belum ada di sini?
         </h2>
-        <p class="mt-1 text-xs text-white/75 sm:text-sm">
-          Klaim atau daftarkan listing agar publik bisa menemukan ruang redaksi
-          Anda secara langsung.
+        <p class="mt-2 text-sm text-white/80 leading-relaxed">
+          Segera daftarkan profil media Anda. Buat media Anda masuk radar iklan nasional.
         </p>
       </div>
       <a
-        href="/claim"
-        class="inline-flex shrink-0 items-center justify-center rounded-full bg-brand-accent px-5 py-2.5 text-xs font-semibold text-brand-dark transition hover:bg-amber-400"
+        href="/claim?tab=daftar"
+        class="inline-flex shrink-0 items-center justify-center rounded-full bg-brand-accent px-8 py-3 text-sm font-bold text-brand-dark transition hover:bg-amber-400 hover:scale-[1.02]"
       >
-        Mulai Klaim
+        Daftar
       </a>
+    </div>
+
+    <!-- Sub-Section: Sudah terdaftar -->
+    <div class="text-center py-4 flex flex-col items-center">
+      <h3 class="font-display text-xl font-extrabold tracking-tight text-brand-dark sm:text-2xl">
+        Media Anda sudah terdaftar?
+      </h3>
+      <p class="mt-4 text-base text-brand-dark/80 flex flex-wrap items-center justify-center gap-2">
+        <span>Klik</span>
+        <a
+          href="/claim?tab=klaim"
+          class="inline-flex items-center justify-center rounded-full bg-brand-accent px-5 py-1.5 text-xs font-bold text-brand-dark uppercase tracking-wider transition hover:bg-amber-400 hover:scale-[1.02]"
+        >
+          Klaim
+        </a>
+        <span>untuk update data terbaru.</span>
+      </p>
     </div>
   </section>
 </Layout>

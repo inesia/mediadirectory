@@ -4,12 +4,11 @@ const isHome = pathname === "/";
 
 const links = [
   { href: "/", label: "Beranda" },
-  { href: "/directory", label: "Direktori" },
-  { href: "/pengajuan", label: "Pengajuan" },
-  { href: "/claim", label: "Daftar Media & Klaim" },
+  { href: "/about", label: "Tentang Kami" },
+  { href: "/directory", label: "List Media" },
 ];
 
-const desktopLinks = links.filter((link) => link.href !== "/claim");
+const desktopLinks = links;
 
 function isActive(href: string) {
   if (href === "/") return pathname === "/";
@@ -63,32 +62,20 @@ function isActive(href: string) {
           ))
         }
       </nav>
-      <a
-        href="/claim"
-        id="header-nav-claim"
-        class:list={[
-          "inline-flex items-center rounded-full px-3.5 py-2 text-sm font-semibold transition duration-300 sm:px-4",
-          isHome
-            ? "border border-white/40 bg-white/10 text-white backdrop-blur-sm hover:bg-white/20"
-            : "border border-brand-accent bg-transparent text-brand-dark hover:bg-brand-accent/10",
-        ]}
-      >
-        Daftar Media / Klaim
-      </a>
 
-      <!-- Guest: text Masuk · Logged-in: profile icon -->
-      <div id="header-auth-group" class="flex items-center gap-1 sm:gap-2">
+      <!-- Guest Login Button & Profile icon when logged in -->
+      <div id="header-auth-group" class="flex items-center gap-1.5 sm:gap-2">
         <a
           href="/login"
           id="header-auth-login"
           class:list={[
-            "header-auth-text inline-flex items-center rounded-full px-3 py-2 text-sm font-medium transition duration-300",
+            "header-auth-text inline-flex items-center justify-center rounded-full px-5 py-2 text-xs font-bold transition-all duration-300 shadow-sm hover:scale-[1.02] active:scale-[0.98]",
             isHome
-              ? "text-white/80 hover:text-white"
-              : "text-brand-dark/70 hover:text-brand-primary",
+              ? "bg-brand-accent text-brand-dark hover:bg-amber-400"
+              : "bg-brand-primary text-white hover:bg-brand-primary/95",
           ]}
         >
-          Masuk
+          Login
         </a>
         <a
           href="/profile"
