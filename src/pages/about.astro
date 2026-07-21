@@ -28,4 +28,51 @@ import Layout from "../layouts/Layout.astro";
       </div>
     </div>
   </section>
+
+  <!-- Cara kerja -->
+  <section class="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-2xl text-center">
+      <h2
+        class="font-display text-xl font-extrabold tracking-tight sm:text-2xl text-brand-dark"
+      >
+        Cara Kerja
+      </h2>
+      <p class="mt-1 text-xs text-brand-dark/60">
+        Sederhana, berverifikasi, dan transparan untuk publik.
+      </p>
+    </div>
+    <ol class="mt-6 grid gap-4 grid-cols-1 sm:grid-cols-3">
+      {
+        [
+          {
+            step: "01",
+            title: "Cari",
+            body: "Ketik nama, pilih lokasi, atau filter jenis media.",
+          },
+          {
+            step: "02",
+            title: "Jelajahi",
+            body: "Lihat profil outlet beserta status verifikasinya.",
+          },
+          {
+            step: "03",
+            title: "Klaim",
+            body: "Ajukan kepemilikan listing untuk ruang redaksi Anda.",
+          },
+        ].map((item) => (
+          <li class="rounded-xl border border-brand-dark/6 bg-white p-4 text-center shadow-sm">
+            <span class="font-display text-xs font-bold text-brand-accent">
+              {item.step}
+            </span>
+            <h3 class="mt-1 font-display text-sm font-bold text-brand-dark">
+              {item.title}
+            </h3>
+            <p class="mt-1 text-xs leading-relaxed text-brand-dark/65">
+              {item.body}
+            </p>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
 </Layout>

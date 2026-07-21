@@ -98,7 +98,7 @@ export const mediaOutlets: MediaOutlet[] = [
     slug: 'kompas',
     name: 'Kompas',
     domain: 'https://www.kompas.com',
-    logo: '',
+    logo: '/logos/kompas.jpeg',
     images: [],
     description:
       'Ruang redaksi nasional terkemuka yang meliput politik, bisnis, dan budaya dengan standar editorial terverifikasi.',
@@ -129,7 +129,7 @@ export const mediaOutlets: MediaOutlet[] = [
     slug: 'tempo',
     name: 'Tempo',
     domain: 'https://www.tempo.co',
-    logo: '',
+    logo: '/logos/tempo.png',
     images: [],
     description:
       'Mingguan investigasi yang dikenal dengan liputan mendalam dan jurnalisme independen di Indonesia.',
@@ -159,7 +159,7 @@ export const mediaOutlets: MediaOutlet[] = [
     slug: 'detik',
     name: 'Detik',
     domain: 'https://www.detik.com',
-    logo: '',
+    logo: '/logos/detik.jpg',
     images: [],
     description:
       'Platform berita digital yang cepat meliput headline nasional, gaya hidup, dan olahraga.',
@@ -219,7 +219,7 @@ export const mediaOutlets: MediaOutlet[] = [
     slug: 'radio-elshinta',
     name: 'Radio Elshinta',
     domain: 'https://www.elshinta.com',
-    logo: '',
+    logo: '/logos/elshinta.png',
     images: [],
     description:
       'Jaringan radio berita nasional dengan liputan interaktif dan update lalu lintas real-time.',
@@ -276,7 +276,7 @@ export const mediaOutlets: MediaOutlet[] = [
     slug: 'suara-surabaya',
     name: 'Suara Surabaya',
     domain: 'https://www.suarasurabaya.net',
-    logo: '',
+    logo: '/logos/suara-surabaya.png',
     images: [],
     description:
       'Radio jurnalisme warga yang dikenal dengan pelaporan partisipatif dan pantauan layanan kota.',
@@ -363,7 +363,7 @@ export const mediaOutlets: MediaOutlet[] = [
     slug: 'tribun-medan',
     name: 'Tribun Medan',
     domain: 'https://medan.tribunnews.com',
-    logo: '',
+    logo: '/logos/tribun-medan.png',
     images: [],
     description:
       'Redaksi digital regional yang meliput politik, bisnis, dan cerita komunitas di Sumatera Utara.',
