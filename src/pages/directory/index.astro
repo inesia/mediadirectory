@@ -1,24 +1,40 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import MediaCard from '../../components/MediaCard.astro';
-import { mediaOutlets, mediaTypes, provinces } from '../../lib/data';
+import { mediaOutlets, mediaCategoryGroups } from '../../lib/data';
+import { provinceList, citiesOf } from '../../lib/wilayah';
+
+/** Toggle when SOP ready — keep markup, just reveal */
+const SHOW_REGION_FILTERS = false;
+const SHOW_STATUS_FILTER = false;
+const SHOW_STATUS_ON_CARDS = false;
+
+/** Demo: pad list so hybrid pagination feels real (~48 items) */
+const PAGE_SIZE = 9;
+const SIMULATE_TOTAL = 48;
+const displayList = Array.from({ length: SIMULATE_TOTAL }, (_, i) => ({
+  media: mediaOutlets[i % mediaOutlets.length],
+  key: `sim-${i}`,
+}));
 ---
 
 <Layout
-  title="Direktori"
-  description="Jelajahi media Indonesia yang terdaftar dan terverifikasi berdasarkan jenis, wilayah, dan status."
+  title="Direktori Media Nasional"
+  description="Kenali media yang tumbuh di daerahmu. Temukan publikasi yang tepat untuk bisnismu — semua data resmi dalam satu platform terpadu."
 >
   <section class="border-b border-brand-dark/6 bg-white">
     <div class="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8 lg:py-12">
       <p class="text-xs font-semibold uppercase tracking-[0.18em] text-brand-primary">
-        Direktori
+        List Media
       </p>
       <h1 class="mt-2 font-display text-3xl font-bold tracking-tight sm:text-4xl">
-        Jelajahi outlet berita
+        Direktori Media Nasional
       </h1>
-      <p class="mt-2 max-w-2xl text-sm text-brand-dark/65 sm:text-base">
-        Filter berdasarkan jenis, provinsi, atau status verifikasi. Hasil diperbarui langsung di
-        halaman ini.
+      <p class="mt-2 max-w-2xl text-base font-medium text-brand-dark/80 sm:text-lg">
+        Kenali Media yang Tumbuh di Daerahmu. Temukan Publikasi yang Tepat untuk Bisnismu.
+      </p>
+      <p class="mt-2 max-w-2xl text-sm text-brand-dark/55">
+        Semua data resmi dalam satu platform terpadu.
       </p>
     </div>
   </section>
@@ -28,46 +44,163 @@ import { mediaOutlets, mediaTypes, provinces } from '../../lib/data';
       id="directory-filters"
       class="z-30 -mx-4 border-b border-brand-dark/8 bg-brand-bg px-4 py-4 sm:sticky sm:top-[57px] sm:mx-0 sm:rounded-xl sm:border sm:bg-brand-bg/95 sm:px-5 sm:backdrop-blur"
     >
-      <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <label class="block">
-          <span class="mb-1.5 block text-[11px] font-semibold uppercase tracking-wide text-brand-dark/45"
-            >Cari</span
-          >
-          <input
-            id="filter-search"
-            type="search"
-            placeholder="Nama media atau topik…"
-            class="w-full rounded-lg border border-brand-dark/12 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20"
-          />
-        </label>
+      <!-- Search -->
+      <label class="block">
+        <span class="mb-1.5 block text-[11px] font-semibold uppercase tracking-wide text-brand-dark/45"
+          >Cari</span
+        >
+        <input
+          id="filter-search"
+          type="search"
+          placeholder="Cari nama media atau domain…"
+          class="w-full rounded-lg border border-brand-dark/12 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20"
+        />
+      </label>
 
-        <label class="block">
-          <span class="mb-1.5 block text-[11px] font-semibold uppercase tracking-wide text-brand-dark/45"
-            >Jenis</span
+      <!-- Category chips: 1 row + expand (mobile & desktop) -->
+      <div class="mt-4">
+        <p class="mb-2 text-[11px] font-semibold uppercase tracking-wide text-brand-dark/45">
+          Jenis media
+        </p>
+        <div class="relative">
+          <div
+            id="category-filters"
+            class="category-row flex flex-wrap gap-2 overflow-hidden transition-[max-height] duration-300"
+            data-expanded="false"
+            role="group"
+            aria-label="Filter jenis media"
           >
-          <select
-            id="filter-type"
-            class="w-full rounded-lg border border-brand-dark/12 bg-white px-3 py-2.5 text-sm outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20"
+            <button
+              type="button"
+              class="category-chip shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold ring-1 ring-inset transition bg-brand-primary text-white ring-brand-primary"
+              data-category=""
+              data-label="Semua"
+              aria-pressed="true"
+            >
+              Semua
+            </button>
+            {
+              mediaCategoryGroups.map((g) => (
+                <button
+                  type="button"
+                  class="category-chip shrink-0 rounded-full bg-white px-3.5 py-1.5 text-xs font-semibold text-brand-dark/65 ring-1 ring-inset ring-brand-dark/12 transition hover:ring-brand-primary/40"
+                  data-category={g.id}
+                  data-label={g.label}
+                  aria-pressed="false"
+                >
+                  {g.label}
+                </button>
+              ))
+            }
+          </div>
+          <button
+            type="button"
+            id="category-more"
+            class="mt-2 hidden items-center gap-1 rounded-full border border-brand-dark/12 bg-white px-3 py-1 text-[11px] font-semibold text-brand-primary transition hover:border-brand-primary/30"
+            aria-expanded="false"
+            aria-controls="category-filters"
           >
-            <option value="">Semua jenis</option>
-            {mediaTypes.map((t) => <option value={t}>{t}</option>)}
-          </select>
-        </label>
+            <span id="category-more-label">+ Lainnya</span>
+            <svg
+              id="category-more-icon"
+              class="h-3.5 w-3.5 transition"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              aria-hidden="true"
+            >
+              <path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
 
-        <label class="block">
+      <!-- Region filters: built & wired, hidden until data/SOP ready -->
+      <div
+        id="region-filters"
+        class:list={['mt-4 grid gap-3 sm:grid-cols-2', !SHOW_REGION_FILTERS && 'hidden']}
+        hidden={!SHOW_REGION_FILTERS}
+        data-feature="region-filters"
+      >
+        <div class="relative" data-combobox data-combobox-id="province">
           <span class="mb-1.5 block text-[11px] font-semibold uppercase tracking-wide text-brand-dark/45"
             >Provinsi</span
           >
-          <select
-            id="filter-province"
+          <input
+            id="filter-province-input"
+            type="text"
+            role="combobox"
+            aria-expanded="false"
+            aria-controls="province-listbox"
+            aria-autocomplete="list"
+            placeholder="Ketik atau pilih provinsi…"
+            autocomplete="off"
             class="w-full rounded-lg border border-brand-dark/12 bg-white px-3 py-2.5 text-sm outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20"
+          />
+          <input type="hidden" id="filter-province" value="" />
+          <ul
+            id="province-listbox"
+            role="listbox"
+            class="absolute z-40 mt-1 hidden max-h-56 w-full overflow-auto rounded-lg border border-brand-dark/12 bg-white py-1 shadow-lg"
+            hidden
           >
-            <option value="">Semua provinsi</option>
-            {provinces.map((p) => <option value={p}>{p}</option>)}
-          </select>
-        </label>
+            <li
+              role="option"
+              data-value=""
+              class="cursor-pointer px-3 py-2 text-sm text-brand-dark/70 hover:bg-brand-primary/8"
+            >
+              Semua provinsi
+            </li>
+            {
+              provinceList.map((p) => (
+                <li
+                  role="option"
+                  data-value={p}
+                  class="cursor-pointer px-3 py-2 text-sm text-brand-dark hover:bg-brand-primary/8"
+                >
+                  {p}
+                </li>
+              ))
+            }
+          </ul>
+        </div>
 
-        <label class="block">
+        <div class="relative" data-combobox data-combobox-id="city">
+          <span class="mb-1.5 block text-[11px] font-semibold uppercase tracking-wide text-brand-dark/45"
+            >Kabupaten / Kota</span
+          >
+          <input
+            id="filter-city-input"
+            type="text"
+            role="combobox"
+            aria-expanded="false"
+            aria-controls="city-listbox"
+            aria-autocomplete="list"
+            placeholder="Pilih provinsi dulu…"
+            autocomplete="off"
+            disabled
+            class="w-full rounded-lg border border-brand-dark/12 bg-white px-3 py-2.5 text-sm outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20 disabled:cursor-not-allowed disabled:bg-brand-bg disabled:text-brand-dark/40"
+          />
+          <input type="hidden" id="filter-city" value="" />
+          <ul
+            id="city-listbox"
+            role="listbox"
+            class="absolute z-40 mt-1 hidden max-h-56 w-full overflow-auto rounded-lg border border-brand-dark/12 bg-white py-1 shadow-lg"
+            hidden
+          >
+          </ul>
+        </div>
+      </div>
+
+      <!-- Status filter: kept for later, hidden for now -->
+      <div
+        id="status-filter-wrap"
+        class:list={['mt-4', !SHOW_STATUS_FILTER && 'hidden']}
+        hidden={!SHOW_STATUS_FILTER}
+        data-feature="status-filter"
+      >
+        <label class="block max-w-xs">
           <span class="mb-1.5 block text-[11px] font-semibold uppercase tracking-wide text-brand-dark/45"
             >Status</span
           >
@@ -84,11 +217,13 @@ import { mediaOutlets, mediaTypes, provinces } from '../../lib/data';
         </label>
       </div>
 
-      <div class="mt-3 flex items-center justify-between gap-3">
+      <div class="mt-4 flex items-center justify-between gap-3">
         <p class="text-sm text-brand-dark/55">
-          Menampilkan <span id="result-count" class="font-semibold text-brand-dark"
-            >{mediaOutlets.length}</span
-          > media
+          Menampilkan
+          <span id="shown-count" class="font-semibold text-brand-dark">0</span>
+          dari
+          <span id="result-count" class="font-semibold text-brand-dark">{SIMULATE_TOTAL}</span>
+          media
         </p>
         <button
           type="button"
@@ -100,71 +235,527 @@ import { mediaOutlets, mediaTypes, provinces } from '../../lib/data';
       </div>
     </div>
 
-    <div id="media-grid" class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {mediaOutlets.map((media) => <MediaCard media={media} />)}
+    <div id="media-grid" class="mt-5 grid gap-2 sm:mt-6 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
+      {
+        displayList.map(({ media, key }) => (
+          <div class="media-card-wrap" data-sim-key={key}>
+            <MediaCard media={media} showStatus={SHOW_STATUS_ON_CARDS} />
+          </div>
+        ))
+      }
+    </div>
+
+    <!-- Skeleton placeholders (shown while loading) -->
+    <div
+      id="skeleton-grid"
+      class="mt-5 hidden grid gap-2 sm:mt-6 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3"
+      aria-hidden="true"
+    >
+      {
+        Array.from({ length: 6 }).map(() => (
+          <div class="media-skeleton animate-pulse border border-brand-dark/8 bg-white p-3 sm:p-5">
+            <div class="flex items-center gap-3 sm:flex-col sm:items-start">
+              <div class="h-9 w-9 shrink-0 rounded-lg bg-brand-dark/8 sm:h-11 sm:w-11"></div>
+              <div class="min-w-0 flex-1 space-y-2 sm:mt-4 sm:w-full">
+                <div class="h-4 w-2/3 rounded bg-brand-dark/10"></div>
+                <div class="h-3 w-1/2 rounded bg-brand-dark/6"></div>
+                <div class="mt-4 hidden h-px w-full bg-brand-dark/6 sm:block"></div>
+                <div class="ml-auto hidden h-3 w-20 rounded bg-brand-dark/8 sm:block"></div>
+              </div>
+            </div>
+          </div>
+        ))
+      }
     </div>
 
     <p id="empty-state" class="mt-12 hidden text-center text-sm text-brand-dark/55" hidden>
       Tidak ada media yang cocok dengan filter Anda. Coba hapus satu atau beberapa filter.
     </p>
+
+    <!-- Loading progress -->
+    <div id="loading-progress" class="mt-6 hidden" aria-live="polite" aria-busy="true">
+      <div class="mx-auto max-w-xs">
+        <div class="mb-2 flex items-center justify-between text-[11px] font-semibold text-brand-dark/50">
+          <span id="loading-label">Memuat…</span>
+          <span id="loading-pct">0%</span>
+        </div>
+        <div class="h-1.5 overflow-hidden rounded-full bg-brand-dark/8">
+          <div
+            id="loading-bar"
+            class="h-full w-0 rounded-full bg-brand-primary transition-[width] duration-150 ease-out"
+          >
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hybrid: Load more + page numbers -->
+    <div id="pagination-bar" class="mt-8 space-y-4">
+      <p id="page-status" class="text-center text-xs text-brand-dark/45"></p>
+      <div class="flex justify-center">
+        <button
+          type="button"
+          id="load-more"
+          class="inline-flex items-center justify-center gap-2 rounded-full border border-brand-dark/12 bg-white px-5 py-2.5 text-sm font-semibold text-brand-dark transition hover:border-brand-primary/30 hover:text-brand-primary disabled:cursor-wait disabled:opacity-60"
+        >
+          Muat lebih banyak
+        </button>
+      </div>
+      <nav
+        id="page-numbers"
+        class="flex flex-wrap items-center justify-center gap-1.5"
+        aria-label="Paginasi"
+      >
+      </nav>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="mx-auto max-w-6xl px-4 pb-14 sm:px-6 lg:px-8">
+    <div class="rounded-2xl bg-brand-primary px-6 py-10 text-center text-white sm:px-10 sm:py-12">
+      <h2 class="font-display text-xl font-bold tracking-tight sm:text-2xl">Daftar</h2>
+      <p class="mx-auto mt-3 max-w-lg text-sm text-white/75 sm:text-base">
+        Segera daftarkan profil media Anda. Buat media Anda masuk radar iklan nasional.
+      </p>
+      <a
+        href="/claim?tab=daftar"
+        class="mt-6 inline-flex items-center justify-center rounded-full bg-brand-accent px-6 py-3 text-sm font-bold text-brand-dark transition hover:bg-amber-400"
+      >
+        Daftarkan media
+      </a>
+    </div>
   </section>
 </Layout>
 
-<script>
-  const search = document.getElementById('filter-search') as HTMLInputElement | null;
-  const type = document.getElementById('filter-type') as HTMLSelectElement | null;
-  const province = document.getElementById('filter-province') as HTMLSelectElement | null;
-  const status = document.getElementById('filter-status') as HTMLSelectElement | null;
+<script
+  define:vars={{
+    citiesByProvince: Object.fromEntries(
+      provinceList.map((p) => [p, citiesOf(p)]),
+    ),
+    pageSize: PAGE_SIZE,
+  }}
+>
+  const search = document.getElementById('filter-search');
+  const provinceHidden = document.getElementById('filter-province');
+  const cityHidden = document.getElementById('filter-city');
+  const provinceInput = document.getElementById('filter-province-input');
+  const cityInput = document.getElementById('filter-city-input');
+  const provinceListbox = document.getElementById('province-listbox');
+  const cityListbox = document.getElementById('city-listbox');
+  const status = document.getElementById('filter-status');
   const reset = document.getElementById('filter-reset');
   const countEl = document.getElementById('result-count');
+  const shownEl = document.getElementById('shown-count');
   const empty = document.getElementById('empty-state');
-  const cards = Array.from(document.querySelectorAll<HTMLElement>('.media-card'));
+  const mediaGrid = document.getElementById('media-grid');
+  const skeletonGrid = document.getElementById('skeleton-grid');
+  const wraps = Array.from(document.querySelectorAll('.media-card-wrap'));
+  const chips = Array.from(document.querySelectorAll('.category-chip'));
+  const categoryFilters = document.getElementById('category-filters');
+  const categoryMore = document.getElementById('category-more');
+  const categoryMoreLabel = document.getElementById('category-more-label');
+  const categoryMoreIcon = document.getElementById('category-more-icon');
+  const loadMoreBtn = document.getElementById('load-more');
+  const pageNumbers = document.getElementById('page-numbers');
+  const pageStatus = document.getElementById('page-status');
+  const paginationBar = document.getElementById('pagination-bar');
+  const loadingProgress = document.getElementById('loading-progress');
+  const loadingBar = document.getElementById('loading-bar');
+  const loadingPct = document.getElementById('loading-pct');
+  const loadingLabel = document.getElementById('loading-label');
 
-  function applyFilters() {
-    const q = (search?.value || '').trim().toLowerCase();
-    const t = type?.value || '';
-    const p = province?.value || '';
-    const s = status?.value || '';
+  let activeCategory = '';
+  let visibleLimit = pageSize;
+  let matchedWraps = [];
+  let categoryExpanded = false;
+  let isLoading = false;
+  let rowHeight = 0;
 
-    let visible = 0;
+  const cityMap = citiesByProvince;
 
-    cards.forEach((card) => {
-      const name = card.dataset.name || '';
-      const cats = card.dataset.categories || '';
-      const matchQ = !q || name.includes(q) || cats.includes(q);
-      const matchT = !t || card.dataset.type === t;
-      const matchP = !p || card.dataset.province === p;
-      const matchS = !s || card.dataset.status === s;
-      const show = matchQ && matchT && matchP && matchS;
-      card.classList.toggle('hidden', !show);
-      if (show) visible += 1;
-    });
-
-    if (countEl) countEl.textContent = String(visible);
-    const isEmpty = visible === 0;
-    empty?.classList.toggle('hidden', !isEmpty);
-    empty?.toggleAttribute('hidden', !isEmpty);
+  // ---- Category row clamp (1 row + expand) ----
+  function measureRowHeight() {
+    if (!categoryFilters || chips.length === 0) return 36;
+    const first = chips[0];
+    const style = getComputedStyle(categoryFilters);
+    const gap = parseFloat(style.rowGap || style.gap || '8') || 8;
+    return first.offsetHeight + gap;
   }
 
-  [search, type, province, status].forEach((el) => {
-    el?.addEventListener('input', applyFilters);
-    el?.addEventListener('change', applyFilters);
+  function syncCategoryClamp() {
+    if (!categoryFilters || !categoryMore) return;
+
+    // Expand fully to measure natural height
+    categoryFilters.style.maxHeight = 'none';
+    const fullHeight = categoryFilters.scrollHeight;
+    rowHeight = measureRowHeight();
+    const needsClamp = fullHeight > rowHeight + 4;
+
+    if (!needsClamp) {
+      categoryMore.classList.add('hidden');
+      categoryMore.classList.remove('inline-flex');
+      categoryFilters.style.maxHeight = 'none';
+      categoryFilters.dataset.expanded = 'true';
+      return;
+    }
+
+    categoryMore.classList.remove('hidden');
+    categoryMore.classList.add('inline-flex');
+
+    if (categoryExpanded) {
+      categoryFilters.style.maxHeight = `${fullHeight}px`;
+      categoryFilters.dataset.expanded = 'true';
+      categoryMore.setAttribute('aria-expanded', 'true');
+      if (categoryMoreLabel) categoryMoreLabel.textContent = 'Sembunyikan';
+      categoryMoreIcon?.classList.add('rotate-180');
+    } else {
+      categoryFilters.style.maxHeight = `${rowHeight}px`;
+      categoryFilters.dataset.expanded = 'false';
+      categoryMore.setAttribute('aria-expanded', 'false');
+      if (categoryMoreLabel) categoryMoreLabel.textContent = '+ Lainnya';
+      categoryMoreIcon?.classList.remove('rotate-180');
+    }
+  }
+
+  categoryMore?.addEventListener('click', () => {
+    categoryExpanded = !categoryExpanded;
+    syncCategoryClamp();
   });
 
-  reset?.addEventListener('click', () => {
+  let resizeTimer = 0;
+  window.addEventListener('resize', () => {
+    window.clearTimeout(resizeTimer);
+    resizeTimer = window.setTimeout(() => {
+      // On resize, collapse again so one-row rule reapplies
+      categoryExpanded = false;
+      syncCategoryClamp();
+    }, 120);
+  });
+
+  function setChipActive(category) {
+    activeCategory = category;
+    chips.forEach((chip) => {
+      const on = (chip.dataset.category || '') === category;
+      chip.setAttribute('aria-pressed', String(on));
+      chip.classList.toggle('bg-brand-primary', on);
+      chip.classList.toggle('text-white', on);
+      chip.classList.toggle('ring-brand-primary', on);
+      chip.classList.toggle('bg-white', !on);
+      chip.classList.toggle('text-brand-dark/65', !on);
+      chip.classList.toggle('ring-brand-dark/12', !on);
+    });
+  }
+
+  // ---- Loading skeleton + progress ----
+  function setLoadingUI(on, label = 'Memuat…') {
+    isLoading = on;
+    if (loadingLabel) loadingLabel.textContent = label;
+    loadingProgress?.classList.toggle('hidden', !on);
+    skeletonGrid?.classList.toggle('hidden', !on);
+    mediaGrid?.classList.toggle('opacity-40', on);
+    mediaGrid?.classList.toggle('pointer-events-none', on);
+    if (loadMoreBtn) loadMoreBtn.disabled = on;
+    if (!on && loadingBar) {
+      loadingBar.style.width = '0%';
+      if (loadingPct) loadingPct.textContent = '0%';
+    }
+  }
+
+  function runProgress(durationMs, label) {
+    return new Promise((resolve) => {
+      setLoadingUI(true, label);
+      const start = performance.now();
+      function tick(now) {
+        const t = Math.min(1, (now - start) / durationMs);
+        const pct = Math.round(t * 100);
+        if (loadingBar) loadingBar.style.width = `${pct}%`;
+        if (loadingPct) loadingPct.textContent = `${pct}%`;
+        if (t < 1) {
+          requestAnimationFrame(tick);
+        } else {
+          setLoadingUI(false);
+          resolve();
+        }
+      }
+      requestAnimationFrame(tick);
+    });
+  }
+
+  function openListbox(listbox, input) {
+    if (!listbox || !input) return;
+    listbox.classList.remove('hidden');
+    listbox.removeAttribute('hidden');
+    input.setAttribute('aria-expanded', 'true');
+  }
+
+  function closeListbox(listbox, input) {
+    if (!listbox || !input) return;
+    listbox.classList.add('hidden');
+    listbox.setAttribute('hidden', '');
+    input.setAttribute('aria-expanded', 'false');
+  }
+
+  function filterListboxOptions(listbox, query) {
+    if (!listbox) return;
+    const q = query.trim().toLowerCase();
+    listbox.querySelectorAll('[role="option"]').forEach((opt) => {
+      const text = (opt.textContent || '').toLowerCase();
+      const value = opt.dataset.value || '';
+      const show = !q || !value || text.includes(q);
+      opt.classList.toggle('hidden', !show);
+    });
+  }
+
+  function fillCityOptions(province) {
+    if (!cityListbox || !cityInput || !cityHidden) return;
+    const cities = province ? cityMap[province] || [] : [];
+    cityListbox.innerHTML = '';
+
+    const allOpt = document.createElement('li');
+    allOpt.setAttribute('role', 'option');
+    allOpt.dataset.value = '';
+    allOpt.className =
+      'cursor-pointer px-3 py-2 text-sm text-brand-dark/70 hover:bg-brand-primary/8';
+    allOpt.textContent = 'Semua kota / kab';
+    cityListbox.appendChild(allOpt);
+
+    cities.forEach((c) => {
+      const li = document.createElement('li');
+      li.setAttribute('role', 'option');
+      li.dataset.value = c;
+      li.className = 'cursor-pointer px-3 py-2 text-sm text-brand-dark hover:bg-brand-primary/8';
+      li.textContent = c;
+      cityListbox.appendChild(li);
+    });
+
+    cityHidden.value = '';
+    cityInput.value = '';
+    cityInput.disabled = !province;
+    cityInput.placeholder = province ? 'Ketik atau pilih kab/kota…' : 'Pilih provinsi dulu…';
+  }
+
+  function renderPagination() {
+    const total = matchedWraps.length;
+    const shown = Math.min(visibleLimit, total);
+    const pageSizeNum = pageSize;
+    const totalPages = Math.max(1, Math.ceil(total / pageSizeNum));
+    const currentPage = Math.min(totalPages, Math.max(1, Math.ceil(shown / pageSizeNum)));
+
+    if (shownEl) shownEl.textContent = String(shown);
+    if (countEl) countEl.textContent = String(total);
+
+    if (pageStatus) {
+      pageStatus.textContent =
+        total === 0
+          ? ''
+          : `Halaman ${currentPage} dari ${totalPages} · menampilkan ${shown} item`;
+    }
+
+    const hasMore = shown < total;
+    if (loadMoreBtn) {
+      loadMoreBtn.classList.toggle('hidden', !hasMore);
+      loadMoreBtn.disabled = isLoading || !hasMore;
+      loadMoreBtn.textContent = hasMore
+        ? `Muat lebih banyak (${Math.min(pageSizeNum, total - shown)})`
+        : 'Semua ditampilkan';
+    }
+
+    if (!pageNumbers) return;
+    pageNumbers.innerHTML = '';
+    if (total <= pageSizeNum) {
+      paginationBar?.classList.toggle('hidden', total === 0);
+      return;
+    }
+
+    paginationBar?.classList.remove('hidden');
+
+    for (let page = 1; page <= totalPages; page++) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.textContent = String(page);
+      btn.dataset.page = String(page);
+      const isActive = page === currentPage;
+      btn.className = isActive
+        ? 'inline-flex h-9 min-w-9 items-center justify-center rounded-lg bg-brand-primary px-2.5 text-sm font-semibold text-white'
+        : 'inline-flex h-9 min-w-9 items-center justify-center rounded-lg border border-brand-dark/12 bg-white px-2.5 text-sm font-semibold text-brand-dark/70 hover:border-brand-primary/30 hover:text-brand-primary';
+      btn.setAttribute('aria-current', isActive ? 'page' : 'false');
+      btn.disabled = isLoading;
+      btn.addEventListener('click', async () => {
+        if (isLoading) return;
+        await runProgress(450, `Memuat halaman ${page}…`);
+        visibleLimit = page * pageSizeNum;
+        renderVisible();
+        mediaGrid?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+      pageNumbers.appendChild(btn);
+    }
+  }
+
+  function renderVisible() {
+    matchedWraps.forEach((wrap, i) => {
+      wrap.classList.toggle('hidden', i >= visibleLimit);
+    });
+    renderPagination();
+  }
+
+  function applyFilters(resetLimit = true) {
+    const q = (search?.value || '').trim().toLowerCase();
+    const p = provinceHidden?.value || '';
+    const c = cityHidden?.value || '';
+    const s = status?.value || '';
+
+    matchedWraps = [];
+
+    wraps.forEach((wrap) => {
+      const card = wrap.querySelector('.media-card');
+      if (!card) return;
+      const name = card.dataset.name || '';
+      const domain = card.dataset.domain || '';
+      const cats = card.dataset.categories || '';
+      const matchQ = !q || name.includes(q) || domain.includes(q) || cats.includes(q);
+      const matchCat =
+        !activeCategory || card.dataset.categoryGroup === activeCategory;
+      const matchP = !p || card.dataset.province === p;
+      const matchC = !c || card.dataset.city === c;
+      const matchS = !s || card.dataset.status === s;
+      const match = matchQ && matchCat && matchP && matchC && matchS;
+      wrap.classList.add('hidden');
+      if (match) matchedWraps.push(wrap);
+    });
+
+    if (resetLimit) visibleLimit = pageSize;
+    renderVisible();
+
+    const isEmpty = matchedWraps.length === 0;
+    empty?.classList.toggle('hidden', !isEmpty);
+    empty?.toggleAttribute('hidden', !isEmpty);
+    paginationBar?.classList.toggle('hidden', isEmpty);
+  }
+
+  async function applyFiltersWithLoading(resetLimit = true) {
+    if (isLoading) return;
+    await runProgress(380, 'Memfilter hasil…');
+    applyFilters(resetLimit);
+  }
+
+  chips.forEach((chip) => {
+    chip.addEventListener('click', () => {
+      setChipActive(chip.dataset.category || '');
+      applyFiltersWithLoading(true);
+      // Keep row expanded if user was browsing tags
+      requestAnimationFrame(syncCategoryClamp);
+    });
+  });
+
+  loadMoreBtn?.addEventListener('click', async () => {
+    if (isLoading) return;
+    await runProgress(520, 'Memuat media…');
+    visibleLimit += pageSize;
+    renderVisible();
+  });
+
+  // Province combobox
+  provinceInput?.addEventListener('focus', () => {
+    filterListboxOptions(provinceListbox, provinceInput.value);
+    openListbox(provinceListbox, provinceInput);
+  });
+  provinceInput?.addEventListener('input', () => {
+    filterListboxOptions(provinceListbox, provinceInput.value);
+    openListbox(provinceListbox, provinceInput);
+    if (provinceHidden) provinceHidden.value = '';
+  });
+  provinceListbox?.addEventListener('click', (e) => {
+    const opt = (e.target).closest('[role="option"]');
+    if (!opt || !provinceInput || !provinceHidden) return;
+    const value = opt.dataset.value || '';
+    provinceHidden.value = value;
+    provinceInput.value = value ? opt.textContent?.trim() || '' : '';
+    closeListbox(provinceListbox, provinceInput);
+    fillCityOptions(value);
+    applyFiltersWithLoading(true);
+  });
+
+  // City combobox
+  cityInput?.addEventListener('focus', () => {
+    if (cityInput.disabled) return;
+    filterListboxOptions(cityListbox, cityInput.value);
+    openListbox(cityListbox, cityInput);
+  });
+  cityInput?.addEventListener('input', () => {
+    if (cityInput.disabled) return;
+    filterListboxOptions(cityListbox, cityInput.value);
+    openListbox(cityListbox, cityInput);
+    if (cityHidden) cityHidden.value = '';
+  });
+  cityListbox?.addEventListener('click', (e) => {
+    const opt = (e.target).closest('[role="option"]');
+    if (!opt || !cityInput || !cityHidden) return;
+    const value = opt.dataset.value || '';
+    cityHidden.value = value;
+    cityInput.value = value ? opt.textContent?.trim() || '' : '';
+    closeListbox(cityListbox, cityInput);
+    applyFiltersWithLoading(true);
+  });
+
+  document.addEventListener('click', (e) => {
+    const target = e.target;
+    if (!provinceInput?.parentElement?.contains(target)) {
+      closeListbox(provinceListbox, provinceInput);
+    }
+    if (!cityInput?.parentElement?.contains(target)) {
+      closeListbox(cityListbox, cityInput);
+    }
+  });
+
+  let searchTimer = 0;
+  search?.addEventListener('input', () => {
+    window.clearTimeout(searchTimer);
+    searchTimer = window.setTimeout(() => applyFiltersWithLoading(true), 280);
+  });
+  status?.addEventListener('change', () => applyFiltersWithLoading(true));
+
+  reset?.addEventListener('click', async () => {
     if (search) search.value = '';
-    if (type) type.value = '';
-    if (province) province.value = '';
+    if (provinceHidden) provinceHidden.value = '';
+    if (cityHidden) cityHidden.value = '';
+    if (provinceInput) provinceInput.value = '';
     if (status) status.value = '';
-    applyFilters();
+    fillCityOptions('');
+    setChipActive('');
+    categoryExpanded = false;
+    await applyFiltersWithLoading(true);
+    syncCategoryClamp();
     history.replaceState(null, '', '/directory');
   });
 
-  // Prefill dari query hero search (?q=&type=&province=)
+  // Prefill from URL
   const params = new URLSearchParams(window.location.search);
   if (search && params.has('q')) search.value = params.get('q') || '';
-  if (type && params.has('type')) type.value = params.get('type') || '';
-  if (province && params.has('province')) province.value = params.get('province') || '';
+  if (params.has('category')) setChipActive(params.get('category') || '');
+  if (params.has('type')) {
+    const typeVal = params.get('type') || '';
+    const match = wraps
+      .map((w) => w.querySelector('.media-card'))
+      .find((c) => c?.dataset.type === typeVal);
+    if (match?.dataset.categoryGroup) setChipActive(match.dataset.categoryGroup);
+  }
+  if (provinceHidden && provinceInput && params.has('province')) {
+    const p = params.get('province') || '';
+    provinceHidden.value = p;
+    provinceInput.value = p;
+    fillCityOptions(p);
+  }
+  if (cityHidden && cityInput && params.has('city')) {
+    const c = params.get('city') || '';
+    cityHidden.value = c;
+    cityInput.value = c;
+    cityInput.disabled = false;
+  }
   if (status && params.has('status')) status.value = params.get('status') || '';
-  applyFilters();
+
+  // Initial paint
+  applyFilters(true);
+  requestAnimationFrame(() => {
+    syncCategoryClamp();
+  });
 </script>

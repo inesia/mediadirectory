@@ -602,6 +602,44 @@ export const mediaTypes: MediaType[] = [
   'Newspaper',
 ];
 
+/** Filter groups for directory (client revision) */
+export const mediaCategoryGroups = [
+  {
+    id: 'siber',
+    label: 'Siber/Website',
+    types: ['Website', 'Newsletter'] as MediaType[],
+  },
+  {
+    id: 'televisi',
+    label: 'Televisi',
+    types: ['TV', 'TV Digital'] as MediaType[],
+  },
+  {
+    id: 'radio-podcast',
+    label: 'Radio & Podcast',
+    types: ['Radio', 'Podcast'] as MediaType[],
+  },
+  {
+    id: 'cetak',
+    label: 'Cetak',
+    types: ['Magazine', 'Newspaper'] as MediaType[],
+  },
+  {
+    id: 'social-first',
+    label: 'Social-First Media',
+    types: ['YouTube', 'TikTok'] as MediaType[],
+  },
+] as const;
+
+export type MediaCategoryGroupId = (typeof mediaCategoryGroups)[number]['id'];
+
+export function getCategoryGroupId(type: MediaType): MediaCategoryGroupId | '' {
+  const found = mediaCategoryGroups.find((g) =>
+    (g.types as readonly MediaType[]).includes(type),
+  );
+  return found?.id ?? '';
+}
+
 export const mediaStatuses: MediaStatus[] = [
   'verified',
   'unverified',

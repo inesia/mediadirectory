@@ -1,78 +1,331 @@
 ---
-import Layout from "../layouts/Layout.astro";
+import Layout from '../layouts/Layout.astro';
+
+const pillars = [
+  {
+    title: 'Kedaulatan Informasi untuk Masyarakat',
+    body: 'Kebebasan pers memberi ruang bagi lahirnya ribuan media di seluruh pelosok Nusantara. Kami hadir untuk mendokumentasikan dan memperkenalkan keberagaman media ini agar informasi lokal tetap dekat dan berdaya di tangan publik.',
+  },
+  {
+    title: 'Kesetaraan untuk Setiap Ruang Redaksi',
+    body: 'Di Indonesia, setiap media nasional berskala besar maupun media independen di daerah memiliki hak yang sama untuk dikenal, dipercaya, dan bertumbuh. Kami percaya bahwa keberagaman media adalah pilar utama demokrasi, dan setiap suara dari daerah berhak mendapatkan panggung yang setara.',
+  },
+  {
+    title: 'Jembatan Kepercayaan untuk Kemajuan Industri',
+    body: 'Transparansi adalah kunci dari pers yang bertanggung jawab. Dengan memetakan media secara terbuka, kami membantu masyarakat menemukan sumber berita yang valid, sekaligus membukakan jalan bagi media daerah untuk terhubung dengan ekosistem bisnis dan kolaborasi skala nasional.',
+  },
+];
+
+const coverage = [
+  {
+    label: 'Siber',
+    desc: 'Portal berita digital & media online berbasis web',
+  },
+  {
+    label: 'Penyiaran TV',
+    desc: 'Terestrial, kabel, & digital streaming',
+  },
+  {
+    label: 'Penyiaran Radio',
+    desc: 'Radio AM/FM & radio siber',
+  },
+  {
+    label: 'Media Cetak',
+    desc: 'Surat kabar, koran lokal, tabloid, & majalah',
+  },
+  {
+    label: 'Social-First Media',
+    desc: 'Kanal berita & informasi berbasis media sosial / komunitas',
+  },
+];
+
+const faqs = [
+  {
+    q: 'Apa Itu Media Directory.ID?',
+    a: 'MediaDirectory.ID adalah indeks dan direktori terbuka yang memetakan, memverifikasi, serta menghubungkan seluruh ekosistem media di Indonesia, mulai dari siber, TV, radio, cetak, hingga social-first media ke masyarakat dan industri.',
+  },
+  {
+    q: 'Apakah pendaftaran media di MediaDirectory.ID dipungut biaya?',
+    a: 'Tidak. Pendaftaran dan pencatatan profil dasar media di MediaDirectory.ID 100% Gratis. Kami berkomitmen menyediakan direktori terbuka yang inklusif bagi seluruh media di Indonesia.',
+  },
+  {
+    q: 'Jenis media apa saja yang bisa terdaftar di sini?',
+    a: 'Seluruh saluran informasi resmi dapat mendaftar, mencakup Portal Berita Siber (Web), Stasiun TV (Terestrial/Cable/Streaming), Radio Penyiaran, Media Cetak (Koran/Tabloid/Majalah), Podcast, hingga Social-First Media (Kanal berita berbasis media sosial/komunitas).',
+  },
+  {
+    q: 'Bagaimana cara mengklaim profil media yang sudah ada di direktori?',
+    a: 'Jika media Anda sudah terdaftar di sistem kami, cukup klik tombol "Klaim Profil Media" pada halaman profil media Anda, lalu unggah dokumen verifikasi identitas redaksi/penanggung jawab untuk mendapatkan akses pengelolaan penuh.',
+  },
+  {
+    q: 'Apa keuntungan terdaftar di MediaDirectory.ID bagi pemilik media?',
+    a: 'Media Anda akan mendapatkan Badge Verifikasi Resmi, meningkatkan visibilitas SEO di Google, serta masuk ke dalam radar media buying brand, agensi PR, dan instansi pemerintah untuk peluang kerja sama iklan maupun distribusi siaran pers.',
+  },
+  {
+    q: 'Bagaimana cara menghubungkan redaksi kami untuk kerja sama atau pembaruan data?',
+    a: 'Anda dapat memperbarui informasi secara mandiri melalui dasbor akun media Anda setelah proses klaim/pendaftaran selesai, atau menghubungi tim dukungan kami melalui kontak resmi di bagian bawah halaman ini.',
+  },
+];
 ---
 
-<Layout title="Tentang Kami" description="Tentang Kami - Media Directory Indonesia">
-  <section class="mx-auto max-w-3xl px-4 py-14 sm:px-6 sm:py-20 lg:px-8">
-    <div class="border border-brand-dark/8 bg-white p-6 sm:p-10 rounded-2xl shadow-sm">
-      <p class="text-xs font-semibold uppercase tracking-[0.18em] text-brand-accent">Profil</p>
-      <h1 class="mt-2 font-display text-3xl font-extrabold tracking-tight text-brand-dark sm:text-4xl">
-        Tentang Kami
-      </h1>
-      <p class="mt-4 text-base leading-relaxed text-brand-dark/70">
-        Media Directory Indonesia adalah database perusahaan media nasional terbesar yang mempertemukan industri media dengan pemerintah, dunia usaha, akademisi, agensi, dan masyarakat umum.
-      </p>
-      
-      <div class="mt-8 space-y-6 text-sm sm:text-base leading-relaxed text-brand-dark/75">
-        <h2 class="font-display text-xl font-bold text-brand-dark mt-6">Visi & Misi</h2>
-        <p>
-          Kami berkomitmen untuk menyediakan registri media Indonesia yang kredibel, terverifikasi, dan mudah diakses guna mendukung ekosistem jurnalisme yang sehat dan transparan di Nusantara.
+<Layout
+  title="Tentang Kami"
+  description="Satu akses ke seluruh media Nusantara — direktori terpadu untuk mencari, memverifikasi, dan menghubungkan ekosistem media Indonesia."
+>
+  <!-- SECTION 1: Hero -->
+  <section class="border-b border-brand-dark/6 bg-white" aria-labelledby="about-hero-title">
+    <div class="mx-auto grid max-w-6xl items-center gap-10 px-4 py-14 sm:px-6 sm:py-16 lg:grid-cols-2 lg:gap-14 lg:px-8 lg:py-20">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-brand-accent">
+          Tentang Kami
         </p>
-        
-        <h2 class="font-display text-xl font-bold text-brand-dark mt-6">Apa yang Kami Lakukan?</h2>
-        <ul class="list-disc pl-5 space-y-2">
-          <li><strong>Direktori Terpusat:</strong> Memudahkan pencarian media cetak, siber, radio, TV, hingga podcast berdasarkan daerah atau klasifikasi tertentu.</li>
-          <li><strong>Verifikasi Ruang Redaksi:</strong> Memastikan keaslian kepemilikan dan data legalitas setiap media yang terdaftar.</li>
-          <li><strong>Peluang Kolaborasi:</strong> Membantu agensi, pemerintah, dan korporat menemukan mitra media terpercaya untuk kampanye iklan dan distribusi rilis pers.</li>
-        </ul>
+        <h1
+          id="about-hero-title"
+          class="mt-3 font-display text-3xl font-extrabold tracking-tight text-brand-dark text-balance sm:text-4xl lg:text-5xl"
+        >
+          Satu Akses ke Seluruh Media Nusantara
+        </h1>
+        <p class="mt-5 max-w-xl text-sm leading-relaxed text-brand-dark/65 sm:text-base">
+          Direktori terpadu dan peta navigasi utama untuk mencari, memverifikasi, serta
+          menghubungkan seluruh ekosistem media di Indonesia, mulai dari siber, TV, radio,
+          cetak, podcast, hingga social-first media, ke masyarakat.
+        </p>
+      </div>
+      <div class="overflow-hidden rounded-2xl border border-brand-dark/8 bg-brand-bg shadow-sm sm:aspect-[5/4]">
+        <img
+          src="/images/about1.png"
+          alt="Ilustrasi akses media Nusantara"
+          class="h-full w-full object-cover object-center"
+          loading="eager"
+        />
       </div>
     </div>
   </section>
 
-  <!-- Cara kerja -->
-  <section class="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
+  <!-- SECTION 2: Landasan & Filosofi -->
+  <section class="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16 lg:px-8 lg:py-20" aria-labelledby="filosofi-heading">
     <div class="mx-auto max-w-2xl text-center">
       <h2
-        class="font-display text-xl font-extrabold tracking-tight sm:text-2xl text-brand-dark"
+        id="filosofi-heading"
+        class="font-display text-2xl font-extrabold tracking-tight text-brand-dark sm:text-3xl"
       >
-        Cara Kerja
+        Landasan &amp; Filosofi Kami
       </h2>
-      <p class="mt-1 text-xs text-brand-dark/60">
-        Sederhana, berverifikasi, dan transparan untuk publik.
-      </p>
     </div>
-    <ol class="mt-6 grid gap-4 grid-cols-1 sm:grid-cols-3">
+
+    <!-- Highlight banner -->
+    <div class="mt-10 overflow-hidden rounded-2xl border border-brand-dark/8 bg-white shadow-sm lg:grid lg:grid-cols-2">
+      <div class="flex flex-col justify-center p-6 sm:p-8 lg:p-10">
+        <h3 class="font-display text-xl font-bold tracking-tight text-brand-primary sm:text-2xl text-balance">
+          Diilhami oleh Semangat UU Pers No. 40 Tahun 1999
+        </h3>
+        <p class="mt-4 text-sm leading-relaxed text-brand-dark/65 sm:text-base">
+          Pers yang bebas membutuhkan ekosistem yang mudah ditemukan, dipercaya, dan terhubung.
+          Semangat UU Pers tidak hanya melindungi kebebasan mengekspresikan gagasan, tetapi juga
+          menjamin hak masyarakat untuk memperoleh informasi yang akurat dan beragam. Itulah
+          semangat dasar yang melahirkan Media Directory Indonesia.
+        </p>
+      </div>
+      <div class="min-h-[220px] overflow-hidden border-t border-brand-dark/6 lg:min-h-0 lg:border-t-0 lg:border-l">
+        <img
+          src="/images/about2.png"
+          alt="Ilustrasi semangat UU Pers"
+          class="h-full min-h-[220px] w-full object-cover object-center lg:min-h-full"
+          loading="lazy"
+        />
+      </div>
+    </div>
+
+    <!-- 3 pillars -->
+    <ul class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
       {
-        [
-          {
-            step: "01",
-            title: "Cari",
-            body: "Ketik nama, pilih lokasi, atau filter jenis media.",
-          },
-          {
-            step: "02",
-            title: "Jelajahi",
-            body: "Lihat profil outlet beserta status verifikasinya.",
-          },
-          {
-            step: "03",
-            title: "Klaim",
-            body: "Ajukan kepemilikan listing untuk ruang redaksi Anda.",
-          },
-        ].map((item) => (
-          <li class="rounded-xl border border-brand-dark/6 bg-white p-4 text-center shadow-sm">
-            <span class="font-display text-xs font-bold text-brand-accent">
-              {item.step}
+        pillars.map((item, i) => (
+          <li class="border-t-2 border-brand-accent/80 pt-5">
+            <span class="font-display text-xs font-bold text-brand-primary/40">
+              {String(i + 1).padStart(2, '0')}
             </span>
-            <h3 class="mt-1 font-display text-sm font-bold text-brand-dark">
+            <h3 class="mt-2 font-display text-base font-bold tracking-tight text-brand-dark sm:text-lg">
               {item.title}
             </h3>
-            <p class="mt-1 text-xs leading-relaxed text-brand-dark/65">
-              {item.body}
-            </p>
+            <p class="mt-3 text-sm leading-relaxed text-brand-dark/65">{item.body}</p>
           </li>
         ))
       }
-    </ol>
+    </ul>
+  </section>
+
+  <!-- SECTION 3: Cakupan Media -->
+  <section class="border-y border-brand-dark/6 bg-white py-14 sm:py-16 lg:py-20" aria-labelledby="cakupan-heading">
+    <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+      <div class="mx-auto max-w-2xl text-center">
+        <h2
+          id="cakupan-heading"
+          class="font-display text-2xl font-extrabold tracking-tight text-brand-dark sm:text-3xl"
+        >
+          Cakupan Media di Direktori
+        </h2>
+        <p class="mt-3 text-sm leading-relaxed text-brand-dark/65 sm:text-base">
+          Misi kami adalah menyediakan tempat bagi media untuk menunjukkan profil resmi yang bisa
+          diakses terbuka oleh publik, yang mencakup:
+        </p>
+      </div>
+
+      <ul class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {
+          coverage.map((item) => (
+            <li class="rounded-xl border border-brand-dark/8 bg-brand-bg/80 p-5 transition hover:border-brand-primary/25">
+              <p class="font-display text-sm font-bold text-brand-primary">{item.label}</p>
+              <p class="mt-2 text-sm leading-relaxed text-brand-dark/65">{item.desc}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- SECTION 4: FAQ Accordion -->
+  <section class="mx-auto max-w-3xl px-4 py-14 sm:px-6 sm:py-16 lg:px-8 lg:py-20" aria-labelledby="faq-heading">
+    <div class="text-center">
+      <h2
+        id="faq-heading"
+        class="font-display text-2xl font-extrabold tracking-tight text-brand-dark sm:text-3xl"
+      >
+        Pertanyaan Umum (FAQ)
+      </h2>
+    </div>
+
+    <div class="mt-10 divide-y divide-brand-dark/8 border-y border-brand-dark/8" id="faq-list">
+      {
+        faqs.map((item, i) => (
+          <details class="faq-item group" open={i === 0}>
+            <summary class="flex cursor-pointer list-none items-start justify-between gap-4 py-5 text-left [&::-webkit-details-marker]:hidden">
+              <span class="font-display text-sm font-bold text-brand-dark sm:text-base">
+                <span class="text-brand-accent">{i + 1}.</span> {item.q}
+              </span>
+              <svg
+                class="mt-0.5 h-5 w-5 shrink-0 text-brand-dark/40 transition group-open:rotate-180"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                aria-hidden="true"
+              >
+                <path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
+            </summary>
+            <p class="pb-5 pr-8 text-sm leading-relaxed text-brand-dark/65 sm:text-base">
+              {item.a}
+            </p>
+          </details>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- SECTION 5: CTA -->
+  <section class="mx-auto max-w-6xl px-4 pb-4 sm:px-6 lg:px-8" aria-labelledby="cta-heading">
+    <div class="rounded-2xl bg-brand-primary px-6 py-10 text-center text-white sm:px-10 sm:py-12">
+      <h2 id="cta-heading" class="font-display text-xl font-bold tracking-tight sm:text-2xl lg:text-3xl text-balance">
+        Jadilah Bagian dari Peta Media Nusantara
+      </h2>
+      <p class="mx-auto mt-3 max-w-xl text-sm text-white/75 sm:text-base">
+        Pastikan media Anda terdata di direktori nasional. Tingkatkan visibilitas, raih kepercayaan
+        publik, dan buka pintu kolaborasi baru hari ini.
+      </p>
+      <div class="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
+        <a
+          href="/claim?tab=daftar"
+          class="inline-flex w-full items-center justify-center rounded-full bg-brand-accent px-6 py-3 text-sm font-bold text-brand-dark transition hover:bg-amber-400 sm:w-auto"
+        >
+          Daftar
+        </a>
+        <a
+          href="/directory"
+          class="inline-flex w-full items-center justify-center rounded-full border border-white/40 bg-white/10 px-6 py-3 text-sm font-semibold text-white backdrop-blur-sm transition hover:bg-white/20 sm:w-auto"
+        >
+          Cek Direktori
+        </a>
+      </div>
+      <p class="mt-5 text-xs text-white/55 sm:text-sm">
+        Media sudah terdaftar?
+        <a href="/claim?tab=klaim" class="font-semibold text-brand-accent underline-offset-2 hover:underline">
+          Klik klaim
+        </a>
+        untuk perbarui data Anda
+      </p>
+    </div>
+  </section>
+
+  <!-- SECTION 6: Kontak Kami (page section, not footer) -->
+  <section
+    id="kontak"
+    class="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16 lg:px-8 lg:py-20"
+    aria-labelledby="kontak-heading"
+  >
+    <div class="grid gap-8 lg:grid-cols-2 lg:gap-12">
+      <div>
+        <h2
+          id="kontak-heading"
+          class="font-display text-2xl font-extrabold tracking-tight text-brand-dark sm:text-3xl"
+        >
+          Kontak Kami
+        </h2>
+        <ul class="mt-6 space-y-5 text-sm sm:text-base">
+          <li>
+            <p class="text-xs font-semibold uppercase tracking-[0.16em] text-brand-dark/45">Email</p>
+            <a
+              href="mailto:CS@mediadirectory.id"
+              class="mt-1 inline-block font-semibold text-brand-primary hover:text-brand-light"
+            >
+              CS@mediadirectory.id
+            </a>
+          </li>
+          <li>
+            <p class="text-xs font-semibold uppercase tracking-[0.16em] text-brand-dark/45">WhatsApp</p>
+            <a
+              href="https://wa.me/6200000000000"
+              class="mt-1 inline-block font-semibold text-brand-primary hover:text-brand-light"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              +62…
+            </a>
+          </li>
+          <li>
+            <p class="text-xs font-semibold uppercase tracking-[0.16em] text-brand-dark/45">Alamat</p>
+            <p class="mt-1 text-brand-dark/70">Jl.………, DKI Jakarta</p>
+          </li>
+        </ul>
+      </div>
+
+      <div class="overflow-hidden rounded-2xl border border-brand-dark/8 bg-brand-bg shadow-sm">
+        <div class="relative aspect-[16/11] w-full min-h-[240px]">
+          <!-- Placeholder Google Maps embed — replace src with final embed URL -->
+          <iframe
+            title="Peta lokasi Media Directory Indonesia"
+            class="absolute inset-0 h-full w-full border-0"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.521260322283!2d106.8195613!3d-6.1944491!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f5d2e764b12d%3A0x3d2ad6f1f0c5e0a!2sJakarta!5e0!3m2!1sid!2sid!4v1700000000000!5m2!1sid!2sid"
+            allowfullscreen
+          ></iframe>
+        </div>
+        <p class="border-t border-brand-dark/6 px-4 py-2 text-center text-[11px] text-brand-dark/40">
+          Embed maps placeholder — ganti dengan lokasi final
+        </p>
+      </div>
+    </div>
   </section>
 </Layout>
+
+<script>
+  // Accordion: only one FAQ open at a time (optional polish)
+  const items = document.querySelectorAll<HTMLDetailsElement>('#faq-list details');
+  items.forEach((item) => {
+    item.addEventListener('toggle', () => {
+      if (!item.open) return;
+      items.forEach((other) => {
+        if (other !== item) other.open = false;
+      });
+    });
+  });
+</script>
